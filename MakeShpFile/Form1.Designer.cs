@@ -33,6 +33,7 @@
             this.axLicenseControl1 = new ESRI.ArcGIS.Controls.AxLicenseControl();
             this.BtnOriginArrayRead = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.DefaultRbtn = new System.Windows.Forms.RadioButton();
             this.WalkingModeRbtn = new System.Windows.Forms.RadioButton();
             this.RidingModeRbtn = new System.Windows.Forms.RadioButton();
             this.PublicTranspRBtn = new System.Windows.Forms.RadioButton();
@@ -44,7 +45,6 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.MYTOCControl = new ESRI.ArcGIS.Controls.AxTOCControl();
             this.AxmapCtrl = new ESRI.ArcGIS.Controls.AxMapControl();
-            this.PreviousVersionMode = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.axLicenseControl1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -85,7 +85,7 @@
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel1.Controls.Add(this.PreviousVersionMode);
+            this.panel1.Controls.Add(this.DefaultRbtn);
             this.panel1.Controls.Add(this.WalkingModeRbtn);
             this.panel1.Controls.Add(this.RidingModeRbtn);
             this.panel1.Controls.Add(this.PublicTranspRBtn);
@@ -95,10 +95,22 @@
             this.panel1.Size = new System.Drawing.Size(223, 211);
             this.panel1.TabIndex = 11;
             // 
+            // DefaultRbtn
+            // 
+            this.DefaultRbtn.AutoSize = true;
+            this.DefaultRbtn.Location = new System.Drawing.Point(31, 172);
+            this.DefaultRbtn.Name = "DefaultRbtn";
+            this.DefaultRbtn.Size = new System.Drawing.Size(65, 16);
+            this.DefaultRbtn.TabIndex = 2;
+            this.DefaultRbtn.TabStop = true;
+            this.DefaultRbtn.Text = "Default";
+            this.DefaultRbtn.UseVisualStyleBackColor = true;
+            this.DefaultRbtn.CheckedChanged += new System.EventHandler(this.DefaultRbtn_CheckedChanged);
+            // 
             // WalkingModeRbtn
             // 
             this.WalkingModeRbtn.AutoSize = true;
-            this.WalkingModeRbtn.Location = new System.Drawing.Point(31, 145);
+            this.WalkingModeRbtn.Location = new System.Drawing.Point(31, 134);
             this.WalkingModeRbtn.Name = "WalkingModeRbtn";
             this.WalkingModeRbtn.Size = new System.Drawing.Size(95, 16);
             this.WalkingModeRbtn.TabIndex = 2;
@@ -110,7 +122,7 @@
             // RidingModeRbtn
             // 
             this.RidingModeRbtn.AutoSize = true;
-            this.RidingModeRbtn.Location = new System.Drawing.Point(31, 104);
+            this.RidingModeRbtn.Location = new System.Drawing.Point(31, 96);
             this.RidingModeRbtn.Name = "RidingModeRbtn";
             this.RidingModeRbtn.Size = new System.Drawing.Size(89, 16);
             this.RidingModeRbtn.TabIndex = 2;
@@ -122,7 +134,7 @@
             // PublicTranspRBtn
             // 
             this.PublicTranspRBtn.AutoSize = true;
-            this.PublicTranspRBtn.Location = new System.Drawing.Point(31, 59);
+            this.PublicTranspRBtn.Location = new System.Drawing.Point(31, 58);
             this.PublicTranspRBtn.Name = "PublicTranspRBtn";
             this.PublicTranspRBtn.Size = new System.Drawing.Size(149, 16);
             this.PublicTranspRBtn.TabIndex = 2;
@@ -216,18 +228,6 @@
             this.AxmapCtrl.Size = new System.Drawing.Size(494, 435);
             this.AxmapCtrl.TabIndex = 0;
             // 
-            // PreviousVersionMode
-            // 
-            this.PreviousVersionMode.AutoSize = true;
-            this.PreviousVersionMode.Location = new System.Drawing.Point(31, 178);
-            this.PreviousVersionMode.Name = "PreviousVersionMode";
-            this.PreviousVersionMode.Size = new System.Drawing.Size(125, 16);
-            this.PreviousVersionMode.TabIndex = 2;
-            this.PreviousVersionMode.TabStop = true;
-            this.PreviousVersionMode.Text = "Previous version ";
-            this.PreviousVersionMode.UseVisualStyleBackColor = true;
-            this.PreviousVersionMode.CheckedChanged += new System.EventHandler(this.WalkingModeRbtn_CheckedChanged);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -271,7 +271,7 @@
         private System.Windows.Forms.Panel panel3;
         private ESRI.ArcGIS.Controls.AxMapControl AxmapCtrl;
         private ESRI.ArcGIS.Controls.AxTOCControl MYTOCControl;
-        private System.Windows.Forms.RadioButton PreviousVersionMode;
+        private System.Windows.Forms.RadioButton DefaultRbtn;
     }
 }
 

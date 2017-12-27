@@ -31,8 +31,7 @@ namespace MakeShpFile
         public int NumOfRecord = 0;
         public ProgressBar ProgressFm;
         private void Form1_Load(object sender, EventArgs e)
-        {
-            ProgressFm = new ProgressBar(2, 100);
+        { 
             ReadExl.Enabled = false;
             CarModeRBtn.Checked = true;
             PolylineRBtn.Checked = true;
@@ -426,13 +425,13 @@ namespace MakeShpFile
                         t++;
                         tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
                     }
-                    MakeFeature2(pFeatureBuffer, pFeatureCursor, subAryLine);
+                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
                 }
                 else
                 {
                     string[] strArray = new string[1];
                     strArray[0] = SumPath;
-                    MakeFeature2(pFeatureBuffer, pFeatureCursor, strArray);
+                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
                 }
                 ProgressFm.setPos((int)((++num) / (double)(NumOfHead * NumOfRecord * 2) * 100));//设置进度条位置
             }
@@ -692,13 +691,13 @@ namespace MakeShpFile
                         t++;
                         tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
                     }
-                    MakeFeature2(pFeatureBuffer, pFeatureCursor, subAryLine);
+                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
                 }
                 else
                 {
                     string[] strArray = new string[1];
                     strArray[0] = SumPath;
-                    MakeFeature2(pFeatureBuffer, pFeatureCursor, strArray);
+                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
                 }
                 ProgressFm.setPos((int)((++num) / (double)(NumOfHead * NumOfRecord * 2) * 100));//设置进度条位置
             }
@@ -905,13 +904,13 @@ namespace MakeShpFile
                         t++;
                         tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
                     }
-                    MakeFeature2(pFeatureBuffer, pFeatureCursor, subAryLine);
+                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
                 }
                 else
                 {
                     string[] strArray = new string[1];
                     strArray[0] = aryLineLast;
-                    MakeFeature2(pFeatureBuffer, pFeatureCursor, strArray);
+                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
                 }
                 ProgressFm.setPos((int)((++num) / (double)(NumOfHead * NumOfRecord) * 100));//设置进度条位置
             }
@@ -1107,13 +1106,13 @@ namespace MakeShpFile
                         t++;
                         tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
                     }
-                    MakeFeature2(pFeatureBuffer, pFeatureCursor, subAryLine);
+                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
                 }
                 else
                 {
                     string[] strArray = new string[1];
                     strArray[0] = aryLineLast;
-                    MakeFeature2(pFeatureBuffer, pFeatureCursor, strArray);
+                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
                 }
                 ProgressFm.setPos((int)((++num) / (double)(NumOfHead * NumOfRecord) * 100));//设置进度条位置
             }
@@ -1331,13 +1330,13 @@ namespace MakeShpFile
                             t++;
                             tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
                         }
-                        MakeFeature2(pFeatureBuffer, pFeatureCursor, subAryLine);
+                        Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
                     }
                     else
                     {
                         string[] strArray = new string[1];
                         strArray[0] = aryLineLast;
-                        MakeFeature2(pFeatureBuffer, pFeatureCursor, strArray);
+                        Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
                     }
                 }
                 ProgressFm.setPos(50 / NumOfHead + (int)((num) / (double)(NumOfHead * NumOfRecord * 2) * 100));//设置进度条位置
@@ -1541,77 +1540,21 @@ namespace MakeShpFile
                         t++;
                         tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
                     }
-                    MakeFeature2(pFeatureBuffer, pFeatureCursor, subAryLine);
+                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
                 }
                 else
                 {
                     string[] strArray = new string[1];
                     strArray[0] = aryLineLast;
-                    MakeFeature2(pFeatureBuffer, pFeatureCursor, strArray);
+                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
                 }
                 ProgressFm.setPos(50 / NumOfHead + (int)((num) / (double)(NumOfHead * NumOfRecord * 2) * 100));//设置进度条位置
             }
             SRcsv.Close();
             FScsv.Close();
         }
-
-        private void ReadExl_Click(object sender, EventArgs e)
+        private void Accessibility_POI_Points(IFeatureWorkspace pFWS, string shpName, string InputFilePath)
         {
-            if (DataMode == -1 || VehicleMode == -1)
-            {
-                MessageBox.Show("未选择交通方式或要素类型！");
-                return;
-            }
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Csv文件(*.csv;*.csv)|*.csv;*.csv|所有文件|*.*";
-            ofd.ValidateNames = true;
-            ofd.CheckPathExists = true;
-            ofd.CheckFileExists = true;
-            if (ofd.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-            //ExlFilePath.Text = ofd.FileName;
-            AxmapCtrl.ClearLayers();
-            string InputFilePath = ofd.FileName;
-            string shpDirectoryPath = System.IO.Path.GetDirectoryName(InputFilePath);
-            string shpName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
-            string shpFullName = shpName + ".shp";
-            string prjName = shpName + ".prj";
-            string dbfName = shpName + ".dbf";
-            string shxName = shpName + ".shx";
-            string sbnName = shpName + ".sbn";
-            string xmlName = shpName + ".shp.xml";
-            string sbxName = shpName + ".sbx";
-            if (System.IO.File.Exists(shpDirectoryPath + "\\" + shpFullName))
-                System.IO.File.Delete(shpDirectoryPath + "\\" + shpFullName);
-            if (System.IO.File.Exists(shpDirectoryPath + "\\" + prjName))
-                System.IO.File.Delete(shpDirectoryPath + "\\" + prjName);
-            if (System.IO.File.Exists(shpDirectoryPath + "\\" + dbfName))
-                System.IO.File.Delete(shpDirectoryPath + "\\" + dbfName);
-            if (System.IO.File.Exists(shpDirectoryPath + "\\" + shxName))
-                System.IO.File.Delete(shpDirectoryPath + shxName);
-            if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbnName))
-                System.IO.File.Delete(shpDirectoryPath + "\\" + sbnName);
-            if (System.IO.File.Exists(shpDirectoryPath + "\\" + xmlName))
-                System.IO.File.Delete(shpDirectoryPath + "\\" + xmlName);
-             if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbxName))
-                 System.IO.File.Delete(shpDirectoryPath + "\\" + sbxName);
-            //生成shp
-            string shpFileName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
-            //打开生成shapefile的工作空间；
-            IFeatureWorkspace pFWS = null;
-            IWorkspaceFactory pWSF = new ShapefileWorkspaceFactoryClass();
-            try
-            {
-                IWorkspace pWs = pWSF.OpenFromFile(shpDirectoryPath + "\\", 0);
-                pFWS = pWs as IFeatureWorkspace;
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-           
             //开始添加属性字段；
             IFields fields = new FieldsClass();
             IFieldsEdit fieldsEdit = (IFieldsEdit)fields;
@@ -1621,19 +1564,12 @@ namespace MakeShpFile
             oidFieldEdit.Name_2 = "OID";
             oidFieldEdit.Type_2 = esriFieldType.esriFieldTypeOID;
             fieldsEdit.AddField(oidField);
-            
+
             //设置生成图的空间坐标参考系统；
             IGeometryDef geometryDef = new GeometryDefClass();
             IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
-            geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
+            geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPoint;
 
-            //ISpatialReferenceFactory spatialReferenceFactory = new SpatialReferenceEnvironmentClass();
-            //ISpatialReference spatialReference =  spatialReferenceFactory.CreateGeographicCoordinateSystem((int)esriSRGeoCSType.esriSRGeoCS_WGS1984);
-            //ISpatialReferenceResolution spatialReferenceResolution = (ISpatialReferenceResolution)spatialReference;
-            //spatialReferenceResolution.ConstructFromHorizon();
-            //ISpatialReferenceTolerance spatialReferenceTolerance = (ISpatialReferenceTolerance)spatialReference;
-            //spatialReferenceTolerance.SetDefaultXYTolerance();
-            //geometryDefEdit.SpatialReference_2 = spatialReference;
             //投影坐标系
             ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
             ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
@@ -1642,7 +1578,6 @@ namespace MakeShpFile
             ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
             spatialReferenceTolerance2.SetDefaultXYTolerance();
             geometryDefEdit.SpatialReference_2 = spatialReference2;
-
 
             //添加字段“Shape”;
             IField geometryField = new FieldClass();
@@ -1653,147 +1588,76 @@ namespace MakeShpFile
             fieldsEdit.AddField(geometryField);
             IField nameField = new FieldClass();
             IFieldEdit nameFieldEdit = (IFieldEdit)nameField;
-            //添加字段车站配对序号
+            //添加字段Name
             nameField = new FieldClass();
             nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "车站对序号";
+            nameFieldEdit.Name_2 = "Name";
+            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            nameFieldEdit.Length_2 = 200;
+            fieldsEdit.AddField(nameField);
+            //添加字段Type
+            nameField = new FieldClass();
+            nameFieldEdit = (IFieldEdit)nameField;
+            nameFieldEdit.Name_2 = "Type";
+            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            nameFieldEdit.Length_2 = 200;
+            fieldsEdit.AddField(nameField);
+            //添加字段“百度地图经度”；
+            nameField = new FieldClass();
+            nameFieldEdit = (IFieldEdit)nameField;
+            nameFieldEdit.Name_2 = "百度经度";
             nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
             nameFieldEdit.Length_2 = 20;
             fieldsEdit.AddField(nameField);
-            //添加字段起始站
+            //添加字段“百度地图纬度”；
             nameField = new FieldClass();
             nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "起始站";
+            nameFieldEdit.Name_2 = "百度纬度";
             nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
             nameFieldEdit.Length_2 = 20;
             fieldsEdit.AddField(nameField);
-            //添加字段终点站
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "终点站";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段消耗时间
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "消耗时间(秒)";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“长度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "长度(千米)";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“长度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "点对数";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
+           
             IFieldChecker fieldChecker = new FieldCheckerClass();
             IEnumFieldError enumFieldError = null;
             IFields validatedFields = null;
             fieldChecker.ValidateWorkspace = (IWorkspace)pFWS;
             fieldChecker.Validate(fields, out enumFieldError, out validatedFields);
             //在工作空间中生成FeatureClass;
-
             IFeatureClass pNewFeaCls = pFWS.CreateFeatureClass(shpName, validatedFields, null, null, esriFeatureType.esriFTSimple, "Shape", "");
-            IFeature feature = null;
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            //添加feature
 
-            System.Text.Encoding encoding = GetType(InputFilePath); //Encoding.ASCII;//  
             System.IO.FileStream FScsv = new System.IO.FileStream(InputFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            System.IO.StreamReader SRcsv = new System.IO.StreamReader(FScsv, encoding);
-
-            List<ESRI.ArcGIS.Geometry.IPoint> pts = new List<ESRI.ArcGIS.Geometry.IPoint>();
-            IPolyline py = new PolylineClass();
+            var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+            System.IO.StreamReader SRcsv = new System.IO.StreamReader(FScsv, utf8WithoutBom, true);
             string aryLine = "";
-            List<IFeatureBuffer> pyList = new List<IFeatureBuffer>();
+            IFeatureBuffer pFeatureBuffer = null;
+            IFeatureCursor pFeatureCursor = null;
+            string Type = shpName;
             while ((aryLine = SRcsv.ReadLine()) != null)
             {
-                if (aryLine == "")
-                    continue;
-                int index = aryLine.IndexOf('"');//第一个双引号在字符串中的位置
-                string aryLineFirst = aryLine.Substring(0, index - 1);
-                string[] aryLineFirstArray = aryLineFirst.Split(',');
-                string aryLineLast = aryLine.Substring(index + 1, aryLine.Length - index - 2);
-                string temp = aryLineLast;
-                int SumOfpoint = temp.Length - temp.Replace(";", "").Length;
-                //feature = pNewFeaCls.CreateFeature();
-
-
-                IFeatureBuffer pFeatureBuffer = pNewFeaCls.CreateFeatureBuffer();
-                IFeatureCursor pFeatureCursor = pNewFeaCls.Insert(true);
-
-                pFeatureBuffer.set_Value(2, aryLineFirstArray[0]);
-                pFeatureBuffer.set_Value(3, aryLineFirstArray[1]);
-                pFeatureBuffer.set_Value(4, aryLineFirstArray[2]);
-                pFeatureBuffer.set_Value(5, aryLineFirstArray[3]);
-                pFeatureBuffer.set_Value(6, aryLineFirstArray[4]);
-                pFeatureBuffer.set_Value(7, SumOfpoint.ToString());
-                IMap pmap = AxmapCtrl.Map;
-                IActiveView pactive = pmap as IActiveView;
-                
-                if (SumOfpoint > 11000)
-                {
-                    int time = SumOfpoint / 11000 + 1;
-                    string[] subAryLine = new string[time];
-                    string tempStr = aryLineLast;
-                    int indexPre = 0;
-                    int indexSub = 0;
-                    int t = 0;
-                    while (tempStr.Length > 0)
-                    {
-                        int indexT = 0;
-                        for (int i = 0; i < 11000; i++)
-                        {
-                            if ((t + 1) == time)
-                            {
-                                indexSub = tempStr.Length;
-                                subAryLine[t] = tempStr.Substring(indexPre, indexSub - 1);
-                                t++;
-                                tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
-                                break;
-                            }
-                            indexT = tempStr.IndexOf(';', indexT + 1);
-                            if (indexT == -1)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                indexSub = indexT;
-                            }
-                        }
-                        if (t == time)
-                            continue;
-                        indexSub++;
-                        subAryLine[t] = tempStr.Substring(indexPre, indexSub - 1);
-                        t++;
-                        tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
-                    }
-                    MakeFeature2(pFeatureBuffer, pFeatureCursor, subAryLine);
-                }
-                else
-                {
-                    string[] strArray = new string[1];
-                    strArray[0] = aryLineLast;
-                    MakeFeature2(pFeatureBuffer, pFeatureCursor, strArray);
-                   
-                }
+                NumOfRecord++;
             }
-            sw.Stop();
-            TimeSpan ts2 = sw.Elapsed;
-            MessageBox.Show("Finished! " + (ts2.TotalMilliseconds / 1000).ToString());
+            SRcsv.BaseStream.Seek(0, SeekOrigin.Begin);
+            int num = 0;
+
+            while ((aryLine = SRcsv.ReadLine()) != null)
+            {
+                num++;
+                pFeatureBuffer = pNewFeaCls.CreateFeatureBuffer();
+                pFeatureCursor = pNewFeaCls.Insert(true);
+                string[] aryLineFirstArray = aryLine.Split(',');
+                int length = aryLineFirstArray.Length;
+                pFeatureBuffer.set_Value(2, aryLineFirstArray[0]);
+                pFeatureBuffer.set_Value(3, Type);
+                pFeatureBuffer.set_Value(4, aryLineFirstArray[length-2]);
+                pFeatureBuffer.set_Value(5, aryLineFirstArray[length-1]);
+                Make_Point_Feature(pFeatureBuffer, pFeatureCursor, aryLineFirstArray[length - 2], aryLineFirstArray[length-1]);//Lng lat
+                ProgressFm.setPos((int)((num) / (double) NumOfRecord * 100));//设置进度条位置
+            }
+            SRcsv.Close();
+            FScsv.Close();
         }
+
 //         private void MakeFeature(IFeature feature,string[] strArray)
 //         {
 //             ISegmentCollection pPath = new PolylineClass();//多态
@@ -1852,7 +1716,15 @@ namespace MakeShpFile
 //             feature.Shape = py;
 //             feature.Store();
 //         }
-        public void MakeFeature2(IFeatureBuffer featureBuffer,IFeatureCursor pFeatureCursor, string[] strArray)
+        public void Make_Point_Feature(IFeatureBuffer featureBuffer, IFeatureCursor pFeatureCursor,string lng,string lat)
+        {
+            ESRI.ArcGIS.Geometry.IPoint pt = new PointClass();
+            pt.X = double.Parse(lng);
+            pt.Y = double.Parse(lat);
+            featureBuffer.Shape = pt;
+            pFeatureCursor.InsertFeature(featureBuffer);
+        }
+        public void Make_Polylint_Feature2(IFeatureBuffer featureBuffer,IFeatureCursor pFeatureCursor, string[] strArray)
         {   
             IPolyline py = new PolylineClass();
             IPointCollection ptc = py as IPointCollection;
@@ -1876,55 +1748,7 @@ namespace MakeShpFile
             featureBuffer.Shape = py;
             pFeatureCursor.InsertFeature(featureBuffer);
         }
-        private void BtnOriginArrayRead_Click(object sender, EventArgs e)
-        {
-            if (DataMode == -1 || VehicleMode == -1)
-            {
-                MessageBox.Show("未选择交通方式或要素类型！");
-                return;
-            }
-            OpenFileDialog ofd = new OpenFileDialog();
-            var utf8WithoutBom = new System.Text.UTF8Encoding(false);
-            ofd.Filter = "txt文件(*.txt;*.txt)|*.txt;*.txt|所有文件|*.*";
-            ofd.ValidateNames = true;
-            ofd.CheckPathExists = true;
-            ofd.CheckFileExists = true;
-            if (ofd.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-            List<string> originArray = new List<string>();
-            string path = ofd.FileName;
-
-            StreamReader sr = new StreamReader(path, utf8WithoutBom);
-            string line = null;
-            string dirPath = System.IO.Path.GetDirectoryName(path);
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            FS = new System.IO.FileStream("origin" + DateTime.Now.ToLongDateString() + DateTime.Now.Hour.ToString() +"."+DateTime.Now.Minute+"." + DateTime.Now.Second.ToString() + ".txt", System.IO.FileMode.OpenOrCreate);
-            SW = new System.IO.StreamWriter(FS, utf8WithoutBom);
-            while ((line = sr.ReadLine()) != null)
-            {
-                NumOfHead++;
-            }
-            sr.BaseStream.Seek(0, SeekOrigin.Begin);
-            int progress = 1;
-            ProgressFm.Show(this);
-            while((line = sr.ReadLine()) != null)
-            {
-                //string fileName = dirPath + "\\" + line + "_subpaths.csv";
-                string fileName = dirPath + "\\" + line;
-                ProgressFm.setPos(((++progress) / NumOfHead) * 100);//设置进度条位置
-                CsvToShp(fileName);
-            }
-            sr.Close();
-            sw.Stop();
-            TimeSpan ts2 = sw.Elapsed;
-            SW.Close();
-            FS.Close();
-            ProgressFm.Close();
-            MessageBox.Show("Finished! " + (ts2.TotalMilliseconds / 1000).ToString());
-        }
+      
 
         private void CarModeRBtn_CheckedChanged(object sender, EventArgs e)
         {
@@ -1990,7 +1814,9 @@ namespace MakeShpFile
         {
             if (PointRBtn.Checked == true)
             {
-                DataMode = 1;
+                DataMode = 2;
+                DefaultRbtn.Checked = true;
+                ReadExl.Enabled = true;
             }
             else
             {
@@ -2002,11 +1828,22 @@ namespace MakeShpFile
         {
             if (PolygonRBtn.Checked == true)
             {
-                DataMode = 1;
+                DataMode = 3;
             }
             else
             {
                 DataMode = -1;
+            }
+        }
+        private void DefaultRbtn_CheckedChanged(object sender, EventArgs e)
+        {
+            if (DefaultRbtn.Checked == true)
+            {
+                VehicleMode = 5;
+            }
+            else
+            {
+                VehicleMode = -1;
             }
         }
         private void CsvToShp(string csvFilePath)
@@ -2264,7 +2101,140 @@ namespace MakeShpFile
                     Walking_Polyline_Routes(pFWS, shpName, InputFilePath);    
                 }
             }
+            else if(DataMode == 2) // Point
+            {
+
+            }
         }
+
+        private void ReadExl_Click(object sender, EventArgs e)
+        {
+            if (DataMode == -1 || VehicleMode == -1)
+            {
+                MessageBox.Show("未选择交通方式或要素类型！");
+                return;
+            }
+            ProgressFm = new ProgressBar(2, 100);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            ProgressFm.Show(this);
+            if (DataMode == 2)//point
+            {
+                if (VehicleMode == 5)
+                {
+                    OpenFileDialog ofd = new OpenFileDialog();
+                    var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+                    ofd.Filter = "csv文件(*.csv;*.csv)|*.csv;*.csv|所有文件|*.*";
+                    ofd.ValidateNames = true;
+                    ofd.CheckPathExists = true;
+                    ofd.CheckFileExists = true;
+                    if (ofd.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+                    string path = ofd.FileName;
+
+
+                    string InputFilePath = ofd.FileName;
+                    string shpDirectoryPath = System.IO.Path.GetDirectoryName(InputFilePath);
+                    string shpName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
+                    string shpFullName = shpName + ".shp";
+                    string prjName = shpName + ".prj";
+                    string dbfName = shpName + ".dbf";
+                    string shxName = shpName + ".shx";
+                    string sbnName = shpName + ".sbn";
+                    string xmlName = shpName + ".shp.xml";
+                    string sbxName = shpName + ".sbx";
+                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + shpFullName))
+                        System.IO.File.Delete(shpDirectoryPath + "\\" + shpFullName);
+                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + prjName))
+                        System.IO.File.Delete(shpDirectoryPath + "\\" + prjName);
+                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + dbfName))
+                        System.IO.File.Delete(shpDirectoryPath + "\\" + dbfName);
+                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + shxName))
+                        System.IO.File.Delete(shpDirectoryPath + shxName);
+                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbnName))
+                        System.IO.File.Delete(shpDirectoryPath + "\\" + sbnName);
+                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + xmlName))
+                        System.IO.File.Delete(shpDirectoryPath + "\\" + xmlName);
+                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbxName))
+                        System.IO.File.Delete(shpDirectoryPath + "\\" + sbxName);
+                    //生成shp
+                    string shpFileName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
+                    //打开生成shapefile的工作空间；
+                    IFeatureWorkspace pFWS = null;
+                    IWorkspaceFactory pWSF = new ShapefileWorkspaceFactoryClass();
+                    try
+                    {
+                        IWorkspace pWs = pWSF.OpenFromFile(shpDirectoryPath + "\\", 0);
+                        pFWS = pWs as IFeatureWorkspace;
+                    }
+                    catch (System.Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    Accessibility_POI_Points(pFWS, shpName, InputFilePath);
+                }
+            }
+            sw.Stop();
+            TimeSpan ts2 = sw.Elapsed;
+            ProgressFm.Close();
+            MessageBox.Show("Finished! " + (ts2.TotalMilliseconds / 1000).ToString());
+        }
+
+        private void BtnOriginArrayRead_Click(object sender, EventArgs e)
+        {
+            if (DataMode == -1 || VehicleMode == -1)
+            {
+                MessageBox.Show("未选择交通方式或要素类型！");
+                return;
+            }
+            ProgressFm = new ProgressBar(2, 100);
+            OpenFileDialog ofd = new OpenFileDialog();
+            var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+            ofd.Filter = "txt文件(*.txt;*.txt)|*.txt;*.txt|所有文件|*.*";
+            ofd.ValidateNames = true;
+            ofd.CheckPathExists = true;
+            ofd.CheckFileExists = true;
+            if (ofd.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+            List<string> originArray = new List<string>();
+            string path = ofd.FileName;
+
+            StreamReader sr = new StreamReader(path, utf8WithoutBom);
+            string line = null;
+            string dirPath = System.IO.Path.GetDirectoryName(path);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            //FS = new System.IO.FileStream("origin" + DateTime.Now.ToLongDateString() + DateTime.Now.Hour.ToString() +"."+DateTime.Now.Minute+"." + DateTime.Now.Second.ToString() + ".txt", System.IO.FileMode.OpenOrCreate);
+            //SW = new System.IO.StreamWriter(FS, utf8WithoutBom);
+            while ((line = sr.ReadLine()) != null)
+            {
+                NumOfHead++;
+            }
+            sr.BaseStream.Seek(0, SeekOrigin.Begin);
+            int progress = 1;
+            ProgressFm.Show(this);
+            while ((line = sr.ReadLine()) != null)
+            {
+                //string fileName = dirPath + "\\" + line + "_subpaths.csv";
+                string fileName = dirPath + "\\" + line;
+                ProgressFm.setPos(((++progress) / NumOfHead) * 100);//设置进度条位置
+                CsvToShp(fileName);
+            }
+            // SW.Close();
+            // FS.Close();
+            sr.Close();
+            sw.Stop();
+            TimeSpan ts2 = sw.Elapsed;
+            ProgressFm.Close();
+            MessageBox.Show("Finished! " + (ts2.TotalMilliseconds / 1000).ToString());
+        }
+
+
+
     }
 }
 

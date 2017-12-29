@@ -331,6 +331,7 @@
             this.Controls.Add(this.BtnOriginArrayRead);
             this.Controls.Add(this.axLicenseControl1);
             this.Controls.Add(this.ReadExl);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Form1";

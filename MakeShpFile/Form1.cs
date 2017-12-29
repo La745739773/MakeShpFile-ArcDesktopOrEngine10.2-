@@ -15,6 +15,7 @@ using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Carto;
 using System.Diagnostics;
 using System.IO;
+using ESRI.ArcGIS;
 
 namespace MakeShpFile
 {
@@ -30,11 +31,52 @@ namespace MakeShpFile
         public int NumOfHead = 0;
         public int NumOfRecord = 0;
         public ProgressBar ProgressFm;
+
+
+
+        //地理坐标系
+        ISpatialReferenceFactory spatialReferenceFactory; // GCS_Beijing_1954
+        esriSRGeoCSType geoSystem;
+        esriSRGeoCS3Type geo3System;
+        //投影坐标系
+        ISpatialReferenceFactory spatialReferenceFactory2;
+        esriSRProjCS4Type proSystem;
+        
+        ISpatialReferenceResolution spatialReferenceResolution;
+        ISpatialReferenceTolerance spatialReferenceTolerance;
+        ISpatialReferenceResolution spatialReferenceResolution2;
+        ISpatialReferenceTolerance spatialReferenceTolerance2;
+        ISpatialReference spatialReference;
+        ISpatialReference spatialReference2;
+
+        IGeometry geo;
         private void Form1_Load(object sender, EventArgs e)
-        { 
+        {
+            //MessageBox.Show("hello world");
             ReadExl.Enabled = false;
             CarModeRBtn.Checked = true;
             PolylineRBtn.Checked = true;
+            //为下拉框添加数据esriSRProjCS_ esriSRGeoCS_
+            ComboBox_Prjsystem.Items.Add("Xian1980_3_Degree_GK_CM_117E");
+            ComboBox_Prjsystem.Items.Add("Beijing1954_3_Degree_GK_CM_120E");
+            ComboBox_GeoSystem.Items.Add("Xian1980");
+            ComboBox_GeoSystem.Items.Add("Beijing1954");
+            ComboBox_Prjsystem.SelectedIndex = 0;
+            ComboBox_GeoSystem.SelectedIndex = 0;
+            //spatialReferenceFactory = new SpatialReferenceEnvironmentClass();
+            //spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
+            //spatialReferenceResolution.ConstructFromHorizon();
+            //spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance.SetDefaultXYTolerance();
+            //spatialReference = spatialReferenceResolution as ISpatialReference;
+
+
+            //spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
+            //spatialReferenceResolution2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem(Convert.ToInt32(proSystem)) as ISpatialReferenceResolution;
+            //spatialReferenceResolution2.ConstructFromHorizon();
+            //spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance2.SetDefaultXYTolerance();
+            //spatialReference2 = spatialReferenceResolution2 as ISpatialReference;
         }
         /// 给定文件的路径，读取文件的二进制数据，判断文件的编码类型  
         /// <param name="FILE_NAME">文件路径</param>  
@@ -199,13 +241,22 @@ namespace MakeShpFile
             IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
             geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
 
+            //地理坐标系
+            //ISpatialReferenceFactory spatialReferenceFactory = new SpatialReferenceEnvironmentClass(); // GCS_Beijing_1954
+            //esriSRGeoCSType geoSystem = esriSRGeoCSType.esriSRGeoCS_Beijing1954;
+            //ISpatialReferenceResolution spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
+            //spatialReferenceResolution.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance.SetDefaultXYTolerance();
+            //ISpatialReference spatialReference = spatialReferenceResolution as ISpatialReference;
+            //geometryDefEdit.SpatialReference_2 = spatialReference;
             //投影坐标系
-            ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
-            ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
-            ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
-            spatialReferenceResolution2.ConstructFromHorizon();
-            ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
-            spatialReferenceTolerance2.SetDefaultXYTolerance();
+            //ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
+            //ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
+            //ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
+            //spatialReferenceResolution2.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance2.SetDefaultXYTolerance();
             geometryDefEdit.SpatialReference_2 = spatialReference2;
 
             //添加字段“Shape”;
@@ -456,14 +507,22 @@ namespace MakeShpFile
             IGeometryDef geometryDef = new GeometryDefClass();
             IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
             geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
-
+            //地理坐标系
+            //ISpatialReferenceFactory spatialReferenceFactory = new SpatialReferenceEnvironmentClass(); // GCS_Beijing_1954
+            //esriSRGeoCSType geoSystem = esriSRGeoCSType.esriSRGeoCS_Beijing1954;
+            //ISpatialReferenceResolution spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
+            //spatialReferenceResolution.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance.SetDefaultXYTolerance();
+            //ISpatialReference spatialReference = spatialReferenceResolution as ISpatialReference;
+            //geometryDefEdit.SpatialReference_2 = spatialReference;
             //投影坐标系
-            ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
-            ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
-            ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
-            spatialReferenceResolution2.ConstructFromHorizon();
-            ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
-            spatialReferenceTolerance2.SetDefaultXYTolerance();
+            //ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
+            //ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
+            //ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
+            //spatialReferenceResolution2.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance2.SetDefaultXYTolerance();
             geometryDefEdit.SpatialReference_2 = spatialReference2;
 
             //添加字段“Shape”;
@@ -722,14 +781,23 @@ namespace MakeShpFile
             IGeometryDef geometryDef = new GeometryDefClass();
             IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
             geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
+            //地理坐标系
+            //ISpatialReferenceFactory spatialReferenceFactory = new SpatialReferenceEnvironmentClass(); // GCS_Beijing_1954
+            //esriSRGeoCSType geoSystem = esriSRGeoCSType.esriSRGeoCS_Beijing1954;
+            //ISpatialReferenceResolution spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
+            //spatialReferenceResolution.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance.SetDefaultXYTolerance();
+            //ISpatialReference spatialReference = spatialReferenceResolution as ISpatialReference;
+            //geometryDefEdit.SpatialReference_2 = spatialReference;
 
             //投影坐标系
-            ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
-            ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
-            ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
-            spatialReferenceResolution2.ConstructFromHorizon();
-            ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
-            spatialReferenceTolerance2.SetDefaultXYTolerance();
+            //ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
+            //ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
+            //ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
+            //spatialReferenceResolution2.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance2.SetDefaultXYTolerance();
             geometryDefEdit.SpatialReference_2 = spatialReference2;
 
             //添加字段“Shape”;
@@ -933,14 +1001,22 @@ namespace MakeShpFile
             IGeometryDef geometryDef = new GeometryDefClass();
             IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
             geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
-
+            //地理坐标系
+            //ISpatialReferenceFactory spatialReferenceFactory = new SpatialReferenceEnvironmentClass(); // GCS_Beijing_1954
+            //esriSRGeoCSType geoSystem = esriSRGeoCSType.esriSRGeoCS_Beijing1954;
+            //ISpatialReferenceResolution spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
+            //spatialReferenceResolution.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance.SetDefaultXYTolerance();
+            //ISpatialReference spatialReference = spatialReferenceResolution as ISpatialReference;
+            //geometryDefEdit.SpatialReference_2 = spatialReference;
             //投影坐标系
-            ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
-            ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
-            ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
-            spatialReferenceResolution2.ConstructFromHorizon();
-            ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
-            spatialReferenceTolerance2.SetDefaultXYTolerance();
+            //ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
+            //ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
+            //ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
+            //spatialReferenceResolution2.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance2.SetDefaultXYTolerance();
             geometryDefEdit.SpatialReference_2 = spatialReference2;
 
             //添加字段“Shape”;
@@ -1135,14 +1211,22 @@ namespace MakeShpFile
             IGeometryDef geometryDef = new GeometryDefClass();
             IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
             geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
-
+            //地理坐标系
+            //ISpatialReferenceFactory spatialReferenceFactory = new SpatialReferenceEnvironmentClass(); // GCS_Beijing_1954
+            //esriSRGeoCSType geoSystem = esriSRGeoCSType.esriSRGeoCS_Beijing1954;
+            //ISpatialReferenceResolution spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
+            //spatialReferenceResolution.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance.SetDefaultXYTolerance();
+            //ISpatialReference spatialReference = spatialReferenceResolution as ISpatialReference;
+            //geometryDefEdit.SpatialReference_2 = spatialReference;
             //投影坐标系
-            ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
-            ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
-            ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
-            spatialReferenceResolution2.ConstructFromHorizon();
-            ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
-            spatialReferenceTolerance2.SetDefaultXYTolerance();
+            //ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
+            //ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
+            //ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
+            //spatialReferenceResolution2.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance2.SetDefaultXYTolerance();
             geometryDefEdit.SpatialReference_2 = spatialReference2;
 
             //添加字段“Shape”;
@@ -1360,14 +1444,22 @@ namespace MakeShpFile
             IGeometryDef geometryDef = new GeometryDefClass();
             IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
             geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
-
+            //地理坐标系
+            //ISpatialReferenceFactory spatialReferenceFactory = new SpatialReferenceEnvironmentClass(); // GCS_Beijing_1954
+            //esriSRGeoCSType geoSystem = esriSRGeoCSType.esriSRGeoCS_Beijing1954;
+            //ISpatialReferenceResolution spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
+            //spatialReferenceResolution.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance.SetDefaultXYTolerance();
+            //ISpatialReference spatialReference = spatialReferenceResolution as ISpatialReference;
+            //geometryDefEdit.SpatialReference_2 = spatialReference;
             //投影坐标系
-            ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
-            ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
-            ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
-            spatialReferenceResolution2.ConstructFromHorizon();
-            ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
-            spatialReferenceTolerance2.SetDefaultXYTolerance();
+            //ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
+            //ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
+            //ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
+            //spatialReferenceResolution2.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance2.SetDefaultXYTolerance();
             geometryDefEdit.SpatialReference_2 = spatialReference2;
 
             //添加字段“Shape”;
@@ -1553,6 +1645,7 @@ namespace MakeShpFile
             SRcsv.Close();
             FScsv.Close();
         }
+        int num = 0;
         private void Accessibility_POI_Points(IFeatureWorkspace pFWS, string shpName, string InputFilePath)
         {
             //开始添加属性字段；
@@ -1570,15 +1663,26 @@ namespace MakeShpFile
             IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
             geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPoint;
 
-            //投影坐标系
-            ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
-            ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
-            ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
-            spatialReferenceResolution2.ConstructFromHorizon();
-            ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
-            spatialReferenceTolerance2.SetDefaultXYTolerance();
+            //地理坐标系
+            //ISpatialReferenceFactory spatialReferenceFactory = new SpatialReferenceEnvironmentClass(); // GCS_Beijing_1954
+            //esriSRGeoCS3Type geoSystem = esriSRGeoCS3Type.esriSRGeoCS_Xian1980;
+            //ISpatialReferenceResolution spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
+            //spatialReferenceResolution.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance.SetDefaultXYTolerance();
+            //ISpatialReference spatialReference = spatialReferenceResolution as ISpatialReference;
+            ////geometryDefEdit.SpatialReference_2 = spatialReference;
+            
+            ////投影坐标系
+            //ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();//Xian_1980_3_Degree_GK_CM_117E
+            //esriSRProjCS4Type proSystem = esriSRProjCS4Type.esriSRProjCS_Xian1980_3_Degree_GK_CM_117E;
+            //ISpatialReferenceResolution spatialReferenceResolution2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem(Convert.ToInt32(proSystem)) as ISpatialReferenceResolution;
+            //spatialReferenceResolution2.ConstructFromHorizon();
+            //ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
+            //spatialReferenceTolerance2.SetDefaultXYTolerance();
+            //ISpatialReference spatialReference2 = spatialReferenceResolution2 as ISpatialReference;
             geometryDefEdit.SpatialReference_2 = spatialReference2;
-
+            
             //添加字段“Shape”;
             IField geometryField = new FieldClass();
             IFieldEdit geometryFieldEdit = (IFieldEdit)geometryField;
@@ -1638,7 +1742,7 @@ namespace MakeShpFile
                 NumOfRecord++;
             }
             SRcsv.BaseStream.Seek(0, SeekOrigin.Begin);
-            int num = 0;
+
 
             while ((aryLine = SRcsv.ReadLine()) != null)
             {
@@ -1651,7 +1755,7 @@ namespace MakeShpFile
                 pFeatureBuffer.set_Value(3, Type);
                 pFeatureBuffer.set_Value(4, aryLineFirstArray[length-2]);
                 pFeatureBuffer.set_Value(5, aryLineFirstArray[length-1]);
-                Make_Point_Feature(pFeatureBuffer, pFeatureCursor, aryLineFirstArray[length - 2], aryLineFirstArray[length-1]);//Lng lat
+                Make_Point_Feature(pFeatureBuffer, pFeatureCursor, aryLineFirstArray[length - 2], aryLineFirstArray[length - 1]);//Lng lat
                 ProgressFm.setPos((int)((num) / (double) NumOfRecord * 100));//设置进度条位置
             }
             SRcsv.Close();
@@ -1716,11 +1820,16 @@ namespace MakeShpFile
 //             feature.Shape = py;
 //             feature.Store();
 //         }
+
         public void Make_Point_Feature(IFeatureBuffer featureBuffer, IFeatureCursor pFeatureCursor,string lng,string lat)
         {
             ESRI.ArcGIS.Geometry.IPoint pt = new PointClass();
             pt.X = double.Parse(lng);
             pt.Y = double.Parse(lat);
+            geo = pt;
+            geo.SpatialReference = spatialReference;
+            geo.Project(spatialReference2);
+            pt = geo as ESRI.ArcGIS.Geometry.IPoint;
             featureBuffer.Shape = pt;
             pFeatureCursor.InsertFeature(featureBuffer);
         }
@@ -1745,11 +1854,14 @@ namespace MakeShpFile
                 }
             }
             (py as ITopologicalOperator).Simplify();
+            geo = py;
+            geo.SpatialReference = spatialReference;
+            geo.Project(spatialReference2);
+            py = geo as ESRI.ArcGIS.Geometry.IPolyline;
             featureBuffer.Shape = py;
             pFeatureCursor.InsertFeature(featureBuffer);
         }
       
-
         private void CarModeRBtn_CheckedChanged(object sender, EventArgs e)
         {
             if (CarModeRBtn.Checked == true)
@@ -2233,7 +2345,43 @@ namespace MakeShpFile
             MessageBox.Show("Finished! " + (ts2.TotalMilliseconds / 1000).ToString());
         }
 
+        private void ComboBox_Prjsystem_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string var = "esriSRProjCS_" + ComboBox_Prjsystem.Text;
+            proSystem = (esriSRProjCS4Type)Enum.Parse(typeof(esriSRProjCS4Type), var);
+            spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
+            spatialReferenceResolution2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem(Convert.ToInt32(proSystem)) as ISpatialReferenceResolution;
+            spatialReferenceResolution2.ConstructFromHorizon();
+            spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
+            spatialReferenceTolerance2.SetDefaultXYTolerance();
+            spatialReference2 = spatialReferenceResolution2 as ISpatialReference;
+        }
 
+        private void ComboBox_GeoSystem_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //ComboBox_Prjsystem.SelectedIndex = ComboBox_GeoSystem.SelectedIndex;
+            string var = "esriSRGeoCS_" + ComboBox_GeoSystem.Text;
+            try
+            {
+                geoSystem = (esriSRGeoCSType)Enum.Parse(typeof(esriSRGeoCSType), var);
+                spatialReferenceFactory = new SpatialReferenceEnvironmentClass();
+                spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
+                spatialReferenceResolution.ConstructFromHorizon();
+                spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
+                spatialReferenceTolerance.SetDefaultXYTolerance();
+                spatialReference = spatialReferenceResolution as ISpatialReference;
+            }
+            catch (System.Exception ex)
+            {
+                geo3System = (esriSRGeoCS3Type)Enum.Parse(typeof(esriSRGeoCS3Type), var);
+                spatialReferenceFactory = new SpatialReferenceEnvironmentClass();
+                spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geo3System)) as ISpatialReferenceResolution;
+                spatialReferenceResolution.ConstructFromHorizon();
+                spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
+                spatialReferenceTolerance.SetDefaultXYTolerance();
+                spatialReference = spatialReferenceResolution as ISpatialReference;
+            }
+        }
 
     }
 }

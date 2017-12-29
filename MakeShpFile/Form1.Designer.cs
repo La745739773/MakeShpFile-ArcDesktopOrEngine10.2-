@@ -45,12 +45,22 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.MYTOCControl = new ESRI.ArcGIS.Controls.AxTOCControl();
             this.AxmapCtrl = new ESRI.ArcGIS.Controls.AxMapControl();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.ComboBox_GeoSystem = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.ComboBox_Prjsystem = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.axLicenseControl1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MYTOCControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AxmapCtrl)).BeginInit();
+            this.panel4.SuspendLayout();
+            this.panel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // ReadExl
@@ -90,9 +100,9 @@
             this.panel1.Controls.Add(this.RidingModeRbtn);
             this.panel1.Controls.Add(this.PublicTranspRBtn);
             this.panel1.Controls.Add(this.CarModeRBtn);
-            this.panel1.Location = new System.Drawing.Point(28, 92);
+            this.panel1.Location = new System.Drawing.Point(12, 88);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(223, 211);
+            this.panel1.Size = new System.Drawing.Size(209, 211);
             this.panel1.TabIndex = 11;
             // 
             // DefaultRbtn
@@ -161,15 +171,15 @@
             this.panel2.Controls.Add(this.PolygonRBtn);
             this.panel2.Controls.Add(this.PointRBtn);
             this.panel2.Controls.Add(this.PolylineRBtn);
-            this.panel2.Location = new System.Drawing.Point(28, 326);
+            this.panel2.Location = new System.Drawing.Point(12, 362);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(223, 116);
+            this.panel2.Size = new System.Drawing.Size(209, 157);
             this.panel2.TabIndex = 12;
             // 
             // PolygonRBtn
             // 
             this.PolygonRBtn.AutoSize = true;
-            this.PolygonRBtn.Location = new System.Drawing.Point(33, 81);
+            this.PolygonRBtn.Location = new System.Drawing.Point(33, 108);
             this.PolygonRBtn.Name = "PolygonRBtn";
             this.PolygonRBtn.Size = new System.Drawing.Size(119, 16);
             this.PolygonRBtn.TabIndex = 0;
@@ -181,7 +191,7 @@
             // PointRBtn
             // 
             this.PointRBtn.AutoSize = true;
-            this.PointRBtn.Location = new System.Drawing.Point(33, 48);
+            this.PointRBtn.Location = new System.Drawing.Point(33, 67);
             this.PointRBtn.Name = "PointRBtn";
             this.PointRBtn.Size = new System.Drawing.Size(107, 16);
             this.PointRBtn.TabIndex = 0;
@@ -193,7 +203,7 @@
             // PolylineRBtn
             // 
             this.PolylineRBtn.AutoSize = true;
-            this.PolylineRBtn.Location = new System.Drawing.Point(33, 13);
+            this.PolylineRBtn.Location = new System.Drawing.Point(33, 24);
             this.PolylineRBtn.Name = "PolylineRBtn";
             this.PolylineRBtn.Size = new System.Drawing.Size(125, 16);
             this.PolylineRBtn.TabIndex = 0;
@@ -207,9 +217,9 @@
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel3.Controls.Add(this.MYTOCControl);
             this.panel3.Controls.Add(this.AxmapCtrl);
-            this.panel3.Location = new System.Drawing.Point(285, 87);
+            this.panel3.Location = new System.Drawing.Point(486, 90);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(661, 445);
+            this.panel3.Size = new System.Drawing.Size(626, 445);
             this.panel3.TabIndex = 13;
             // 
             // MYTOCControl
@@ -228,17 +238,100 @@
             this.AxmapCtrl.Size = new System.Drawing.Size(494, 435);
             this.AxmapCtrl.TabIndex = 0;
             // 
+            // panel4
+            // 
+            this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel4.Controls.Add(this.ComboBox_GeoSystem);
+            this.panel4.Location = new System.Drawing.Point(227, 90);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(253, 209);
+            this.panel4.TabIndex = 14;
+            // 
+            // ComboBox_GeoSystem
+            // 
+            this.ComboBox_GeoSystem.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboBox_GeoSystem.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ComboBox_GeoSystem.FormattingEnabled = true;
+            this.ComboBox_GeoSystem.Location = new System.Drawing.Point(3, 4);
+            this.ComboBox_GeoSystem.Name = "ComboBox_GeoSystem";
+            this.ComboBox_GeoSystem.Size = new System.Drawing.Size(243, 24);
+            this.ComboBox_GeoSystem.TabIndex = 0;
+            this.ComboBox_GeoSystem.SelectedIndexChanged += new System.EventHandler(this.ComboBox_GeoSystem_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.Font = new System.Drawing.Font("楷体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.Location = new System.Drawing.Point(41, 54);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(180, 23);
+            this.label1.TabIndex = 15;
+            this.label1.Text = "抓取数据来源";
+            // 
+            // label2
+            // 
+            this.label2.Font = new System.Drawing.Font("楷体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label2.Location = new System.Drawing.Point(41, 321);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(180, 23);
+            this.label2.TabIndex = 15;
+            this.label2.Text = "恢复要素类型";
+            // 
+            // label3
+            // 
+            this.label3.Font = new System.Drawing.Font("楷体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label3.Location = new System.Drawing.Point(280, 54);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(147, 23);
+            this.label3.TabIndex = 15;
+            this.label3.Text = "地理坐标系";
+            // 
+            // label4
+            // 
+            this.label4.Font = new System.Drawing.Font("楷体", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label4.Location = new System.Drawing.Point(280, 321);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(124, 23);
+            this.label4.TabIndex = 15;
+            this.label4.Text = "投影坐标系";
+            // 
+            // panel5
+            // 
+            this.panel5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel5.Controls.Add(this.ComboBox_Prjsystem);
+            this.panel5.Location = new System.Drawing.Point(227, 362);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(253, 157);
+            this.panel5.TabIndex = 14;
+            // 
+            // ComboBox_Prjsystem
+            // 
+            this.ComboBox_Prjsystem.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboBox_Prjsystem.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ComboBox_Prjsystem.FormattingEnabled = true;
+            this.ComboBox_Prjsystem.Location = new System.Drawing.Point(3, 3);
+            this.ComboBox_Prjsystem.Name = "ComboBox_Prjsystem";
+            this.ComboBox_Prjsystem.Size = new System.Drawing.Size(248, 24);
+            this.ComboBox_Prjsystem.TabIndex = 0;
+            this.ComboBox_Prjsystem.SelectedIndexChanged += new System.EventHandler(this.ComboBox_Prjsystem_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(945, 531);
+            this.ClientSize = new System.Drawing.Size(1114, 531);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.panel5);
+            this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.BtnOriginArrayRead);
             this.Controls.Add(this.axLicenseControl1);
             this.Controls.Add(this.ReadExl);
+            this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -250,6 +343,8 @@
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MYTOCControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.AxmapCtrl)).EndInit();
+            this.panel4.ResumeLayout(false);
+            this.panel5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -272,6 +367,14 @@
         private ESRI.ArcGIS.Controls.AxMapControl AxmapCtrl;
         private ESRI.ArcGIS.Controls.AxTOCControl MYTOCControl;
         private System.Windows.Forms.RadioButton DefaultRbtn;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.ComboBox ComboBox_GeoSystem;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.ComboBox ComboBox_Prjsystem;
     }
 }
 

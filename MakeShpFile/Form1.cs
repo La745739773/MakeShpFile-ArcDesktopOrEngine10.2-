@@ -1682,7 +1682,16 @@ namespace MakeShpFile
             //spatialReferenceTolerance2.SetDefaultXYTolerance();
             //ISpatialReference spatialReference2 = spatialReferenceResolution2 as ISpatialReference;
             geometryDefEdit.SpatialReference_2 = spatialReference2;
-            
+
+
+
+            System.IO.FileStream FScsv = new System.IO.FileStream(InputFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+            System.IO.StreamReader SRcsv = new System.IO.StreamReader(FScsv, utf8WithoutBom, true);
+            string aryLine = "";
+            aryLine = SRcsv.ReadLine();
+            string[] columnArray = aryLine.Split(',');
+
             //添加字段“Shape”;
             IField geometryField = new FieldClass();
             IFieldEdit geometryFieldEdit = (IFieldEdit)geometryField;
@@ -1692,34 +1701,17 @@ namespace MakeShpFile
             fieldsEdit.AddField(geometryField);
             IField nameField = new FieldClass();
             IFieldEdit nameFieldEdit = (IFieldEdit)nameField;
-            //添加字段Name
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "Name";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 200;
-            fieldsEdit.AddField(nameField);
-            //添加字段Type
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "Type";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 200;
-            fieldsEdit.AddField(nameField);
-            //添加字段“百度地图经度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "百度经度";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“百度地图纬度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "百度纬度";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
+
+            for (int i = 0; i < columnArray.Length; i++)
+            {
+                //添加字段Name
+                nameField = new FieldClass();
+                nameFieldEdit = (IFieldEdit)nameField;
+                nameFieldEdit.Name_2 = columnArray[i];
+                nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                nameFieldEdit.Length_2 = 200;
+                fieldsEdit.AddField(nameField);
+            }
            
             IFieldChecker fieldChecker = new FieldCheckerClass();
             IEnumFieldError enumFieldError = null;
@@ -1728,12 +1720,6 @@ namespace MakeShpFile
             fieldChecker.Validate(fields, out enumFieldError, out validatedFields);
             //在工作空间中生成FeatureClass;
             IFeatureClass pNewFeaCls = pFWS.CreateFeatureClass(shpName, validatedFields, null, null, esriFeatureType.esriFTSimple, "Shape", "");
-
-
-            System.IO.FileStream FScsv = new System.IO.FileStream(InputFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            var utf8WithoutBom = new System.Text.UTF8Encoding(false);
-            System.IO.StreamReader SRcsv = new System.IO.StreamReader(FScsv, utf8WithoutBom, true);
-            string aryLine = "";
             IFeatureBuffer pFeatureBuffer = null;
             IFeatureCursor pFeatureCursor = null;
             string Type = shpName;
@@ -1743,7 +1729,7 @@ namespace MakeShpFile
             }
             SRcsv.BaseStream.Seek(0, SeekOrigin.Begin);
 
-
+            aryLine = SRcsv.ReadLine();
             while ((aryLine = SRcsv.ReadLine()) != null)
             {
                 num++;
@@ -1751,10 +1737,10 @@ namespace MakeShpFile
                 pFeatureCursor = pNewFeaCls.Insert(true);
                 string[] aryLineFirstArray = aryLine.Split(',');
                 int length = aryLineFirstArray.Length;
-                pFeatureBuffer.set_Value(2, aryLineFirstArray[0]);
-                pFeatureBuffer.set_Value(3, Type);
-                pFeatureBuffer.set_Value(4, aryLineFirstArray[length-2]);
-                pFeatureBuffer.set_Value(5, aryLineFirstArray[length-1]);
+                for (int i = 0; i < length; i++)
+                {
+                    pFeatureBuffer.set_Value(i+2, aryLineFirstArray[i]);
+                }
                 Make_Point_Feature(pFeatureBuffer, pFeatureCursor, aryLineFirstArray[length - 2], aryLineFirstArray[length - 1]);//Lng lat
                 ProgressFm.setPos((int)((num) / (double) NumOfRecord * 100));//设置进度条位置
             }

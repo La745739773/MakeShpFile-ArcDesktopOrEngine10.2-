@@ -476,13 +476,13 @@ namespace MakeShpFile
                         t++;
                         tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
                     }
-                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
+                    Make_Polyline_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
                 }
                 else
                 {
                     string[] strArray = new string[1];
                     strArray[0] = SumPath;
-                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
+                    Make_Polyline_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
                 }
                 ProgressFm.setPos((int)((++num) / (double)(NumOfHead * NumOfRecord * 2) * 100));//设置进度条位置
             }
@@ -491,8 +491,11 @@ namespace MakeShpFile
             SR_Routescsv.Close();
             FS_Routescsv.Close();
         }
-        private void Car_Polyline_Routes(IFeatureWorkspace pFWS, string shpName, string InputFilePath)
+        private void Car_Polyline_Routes(IFeatureWorkspace pFWS, string shpName, string InputFilePath,string DataStructureFile)
         {
+            IField nameField = new FieldClass();
+            IFieldEdit nameFieldEdit = (IFieldEdit)nameField;
+
             //开始添加属性字段；
             IFields fields = new FieldsClass();
             IFieldsEdit fieldsEdit = (IFieldsEdit)fields;
@@ -507,140 +510,72 @@ namespace MakeShpFile
             IGeometryDef geometryDef = new GeometryDefClass();
             IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
             geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
-            //地理坐标系
-            //ISpatialReferenceFactory spatialReferenceFactory = new SpatialReferenceEnvironmentClass(); // GCS_Beijing_1954
-            //esriSRGeoCSType geoSystem = esriSRGeoCSType.esriSRGeoCS_Beijing1954;
-            //ISpatialReferenceResolution spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
-            //spatialReferenceResolution.ConstructFromHorizon();
-            //ISpatialReferenceTolerance spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
-            //spatialReferenceTolerance.SetDefaultXYTolerance();
-            //ISpatialReference spatialReference = spatialReferenceResolution as ISpatialReference;
-            //geometryDefEdit.SpatialReference_2 = spatialReference;
-            //投影坐标系
-            //ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
-            //ISpatialReference spatialReference2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem((int)esriSRProjCS4Type.esriSRProjCS_Beijing1954_3_Degree_GK_CM_120E);
-            //ISpatialReferenceResolution spatialReferenceResolution2 = (ISpatialReferenceResolution)spatialReference2;
-            //spatialReferenceResolution2.ConstructFromHorizon();
-            //ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
-            //spatialReferenceTolerance2.SetDefaultXYTolerance();
             geometryDefEdit.SpatialReference_2 = spatialReference2;
+
+
+            var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+
+            System.IO.FileStream DataStructureFileFS = new System.IO.FileStream(DataStructureFile, FileMode.Open);
+            System.IO.StreamReader DataStructureFileSR = new System.IO.StreamReader(DataStructureFileFS, utf8WithoutBom);
+            string DataStru = DataStructureFileSR.ReadLine();
+            string[] DataStru_Array = DataStru.Split(' ');
+            string[] DataStru_Name = new string[DataStru_Array.Length];
+            string[] DataStru_DS = new string[DataStru_Array.Length];
+            DataStructureFileSR.Close();
+            DataStructureFileFS.Close();
 
             //添加字段“Shape”;
             IField geometryField = new FieldClass();
             IFieldEdit geometryFieldEdit = (IFieldEdit)geometryField;
+
+
             geometryFieldEdit.Name_2 = "Shape";
             geometryFieldEdit.Type_2 = esriFieldType.esriFieldTypeGeometry;
             geometryFieldEdit.GeometryDef_2 = geometryDef;
             fieldsEdit.AddField(geometryField);
-            IField nameField = new FieldClass();
-            IFieldEdit nameFieldEdit = (IFieldEdit)nameField;
-            //添加字段序号ID
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "序号ID";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“起始点经度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "起始点经度";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“起始点纬度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "起始点纬度";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“终止点经度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "终止点经度";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“终止点纬度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "终止点纬度";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
 
 
-            //添加字段“origin”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "起点位置";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“终点位置”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "终点位置";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“起点区域”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "起点区域";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“终止点纬度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "终点区域";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-
-            //添加字段Route_time
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "Route_time(s)";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段Route_distance
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "Route_distance(km)";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段Traffic_status
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "Traffic_status";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-
-            //添加字段“点对数”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "点对数";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
+            for (int jj = 0; jj < DataStru_Array.Length; jj++)
+            {
+                int index = DataStru_Array[jj].IndexOf('(');
+                DataStru_Name[jj] = DataStru_Array[jj].Substring(0, index);
+                DataStru_DS[jj] = DataStru_Array[jj].Substring(index + 1, DataStru_Array[jj].Length - 2 - index);
+            }
+            for (int jj = 0; jj < DataStru_Array.Length; jj++)
+            {
+                nameField = new FieldClass();
+                nameFieldEdit = (IFieldEdit)nameField;
+                nameFieldEdit.Name_2 = DataStru_Name[jj].ToString();
+                if (DataStru_DS[jj] == "string")
+                {
+                    nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                }
+                else if (DataStru_DS[jj] == "double")
+                    nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                nameFieldEdit.Length_2 = 20;
+                fieldsEdit.AddField(nameField);
+            }
 
             IFieldChecker fieldChecker = new FieldCheckerClass();
             IEnumFieldError enumFieldError = null;
             IFields validatedFields = null;
             fieldChecker.ValidateWorkspace = (IWorkspace)pFWS;
             fieldChecker.Validate(fields, out enumFieldError, out validatedFields);
+            IFeatureClass pNewFeaCls = null; ;
             //在工作空间中生成FeatureClass;
-            IFeatureClass pNewFeaCls = pFWS.CreateFeatureClass(shpName, validatedFields, null, null, esriFeatureType.esriFTSimple, "Shape", "");
+            try
+            {
+                 pNewFeaCls = pFWS.CreateFeatureClass(shpName, validatedFields, null, null, esriFeatureType.esriFTSimple, "Shape", "");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            
 
 
             System.IO.FileStream FS_Routescsv = new System.IO.FileStream(InputFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+         
             System.IO.StreamReader SR_Routescsv = new System.IO.StreamReader(FS_Routescsv, utf8WithoutBom, true);
 
             string SubPathFileName = InputFilePath.Substring(0, InputFilePath.Length - 10) + "subpaths.csv";
@@ -668,17 +603,13 @@ namespace MakeShpFile
                 //int index = Routes_Line.IndexOf('"');//第一个双引号在字符串中的位置
                 //string aryLineFirst = Routes_Line.Substring(0, index - 1);
                 string[] aryLineFirstArray = Routes_Line.Split(',');
-                pFeatureBuffer.set_Value(2, aryLineFirstArray[0]);
-                pFeatureBuffer.set_Value(3, aryLineFirstArray[1]);
-                pFeatureBuffer.set_Value(4, aryLineFirstArray[2]);
-                pFeatureBuffer.set_Value(5, aryLineFirstArray[3]);
-                pFeatureBuffer.set_Value(6, aryLineFirstArray[4]);
-                pFeatureBuffer.set_Value(7, aryLineFirstArray[5]);
-                pFeatureBuffer.set_Value(8, aryLineFirstArray[6]);
-                pFeatureBuffer.set_Value(9, aryLineFirstArray[7]);
-                pFeatureBuffer.set_Value(10, aryLineFirstArray[8]);
-                pFeatureBuffer.set_Value(11, aryLineFirstArray[9]);
-                pFeatureBuffer.set_Value(12, aryLineFirstArray[10]);
+                for (int it = 0; it < DataStru_DS.Length - 2; it++)
+                {
+                    if (DataStru_DS[it] == "string")
+                        pFeatureBuffer.set_Value(it + 2, aryLineFirstArray[it].ToString());
+                    else if(DataStru_DS[it] == "double")
+                        pFeatureBuffer.set_Value(it + 2, double.Parse(aryLineFirstArray[it].ToString()));
+                }
                 pFeatureBuffer.set_Value(13, "0");//拥堵状况设为0 
 
                 SumPath = "";
@@ -750,13 +681,13 @@ namespace MakeShpFile
                         t++;
                         tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
                     }
-                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
+                    Make_Polyline_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
                 }
                 else
                 {
                     string[] strArray = new string[1];
                     strArray[0] = SumPath;
-                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
+                    Make_Polyline_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
                 }
                 ProgressFm.setPos((int)((++num) / (double)(NumOfHead * NumOfRecord * 2) * 100));//设置进度条位置
             }
@@ -972,13 +903,13 @@ namespace MakeShpFile
                         t++;
                         tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
                     }
-                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
+                    Make_Polyline_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
                 }
                 else
                 {
                     string[] strArray = new string[1];
                     strArray[0] = aryLineLast;
-                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
+                    Make_Polyline_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
                 }
                 ProgressFm.setPos((int)((++num) / (double)(NumOfHead * NumOfRecord) * 100));//设置进度条位置
             }
@@ -1182,20 +1113,20 @@ namespace MakeShpFile
                         t++;
                         tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
                     }
-                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
+                    Make_Polyline_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
                 }
                 else
                 {
                     string[] strArray = new string[1];
                     strArray[0] = aryLineLast;
-                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
+                    Make_Polyline_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
                 }
                 ProgressFm.setPos((int)((++num) / (double)(NumOfHead * NumOfRecord) * 100));//设置进度条位置
             }
             SR_Routescsv.Close();
             FS_Routescsv.Close();
         }
-        private void Car_Polyline_subPaths(IFeatureWorkspace pFWS, string shpName, string InputFilePath)
+        private void Car_Polyline_subPaths(IFeatureWorkspace pFWS, string shpName, string InputFilePath, string DataStructureFile)
         {
             //开始添加属性字段；
             IFields fields = new FieldsClass();
@@ -1236,86 +1167,122 @@ namespace MakeShpFile
             geometryFieldEdit.Type_2 = esriFieldType.esriFieldTypeGeometry;
             geometryFieldEdit.GeometryDef_2 = geometryDef;
             fieldsEdit.AddField(geometryField);
+
+            var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+
+
+
             IField nameField = new FieldClass();
             IFieldEdit nameFieldEdit = (IFieldEdit)nameField;
-            //添加字段车站对序号
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "序号ID";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段step_num
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "step_num";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“起始点经度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "起始点经度";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“起始点纬度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "起始点纬度";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“终止点经度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "终止点经度";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段“终止点纬度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "终止点纬度";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段subPath_time
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "subPath_time(s)";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段subPath_distance
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "subPath_distance(km)";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段Area
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "Area";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
-            //添加字段Traffic_status
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "Traffic_status";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
 
-            //添加字段“长度”；
-            nameField = new FieldClass();
-            nameFieldEdit = (IFieldEdit)nameField;
-            nameFieldEdit.Name_2 = "点对数";
-            nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-            nameFieldEdit.Length_2 = 20;
-            fieldsEdit.AddField(nameField);
+            System.IO.FileStream DataStructureFileFS = new System.IO.FileStream(DataStructureFile, FileMode.Open);
+            System.IO.StreamReader DataStructureFileSR = new System.IO.StreamReader(DataStructureFileFS, utf8WithoutBom);
+            string DataStru = DataStructureFileSR.ReadLine();
+            string[] DataStru_Array = DataStru.Split(' ');
+            string[] DataStru_Name = new string[DataStru_Array.Length];
+            string[] DataStru_DS = new string[DataStru_Array.Length];
+            DataStructureFileSR.Close();
+            DataStructureFileFS.Close();
+
+            for (int jj = 0; jj < DataStru_Array.Length; jj++)
+            {
+                int index = DataStru_Array[jj].IndexOf('(');
+                DataStru_Name[jj] = DataStru_Array[jj].Substring(0, index);
+                DataStru_DS[jj] = DataStru_Array[jj].Substring(index + 1, DataStru_Array[jj].Length - 2 - index);
+            }
+            for (int jj = 0; jj < DataStru_Array.Length; jj++)
+            {
+                nameField = new FieldClass();
+                nameFieldEdit = (IFieldEdit)nameField;
+                nameFieldEdit.Name_2 = DataStru_Name[jj].ToString();
+                if (DataStru_DS[jj] == "string")
+                {
+                    nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                }
+                else if (DataStru_DS[jj] == "double")
+                    nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                nameFieldEdit.Length_2 = 20;
+                fieldsEdit.AddField(nameField);
+            }
+
+            ////添加字段车站对序号
+            //nameField = new FieldClass();
+            //nameFieldEdit = (IFieldEdit)nameField;
+            //nameFieldEdit.Name_2 = "序号ID";
+            //nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            //nameFieldEdit.Length_2 = 20;
+            //fieldsEdit.AddField(nameField);
+            ////添加字段step_num
+            //nameField = new FieldClass();
+            //nameFieldEdit = (IFieldEdit)nameField;
+            //nameFieldEdit.Name_2 = "step_num";
+            //nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            //nameFieldEdit.Length_2 = 20;
+            //fieldsEdit.AddField(nameField);
+            ////添加字段“起始点经度”；
+            //nameField = new FieldClass();
+            //nameFieldEdit = (IFieldEdit)nameField;
+            //nameFieldEdit.Name_2 = "起始点经度";
+            //nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            //nameFieldEdit.Length_2 = 20;
+            //fieldsEdit.AddField(nameField);
+            ////添加字段“起始点纬度”；
+            //nameField = new FieldClass();
+            //nameFieldEdit = (IFieldEdit)nameField;
+            //nameFieldEdit.Name_2 = "起始点纬度";
+            //nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            //nameFieldEdit.Length_2 = 20;
+            //fieldsEdit.AddField(nameField);
+            ////添加字段“终止点经度”；
+            //nameField = new FieldClass();
+            //nameFieldEdit = (IFieldEdit)nameField;
+            //nameFieldEdit.Name_2 = "终止点经度";
+            //nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            //nameFieldEdit.Length_2 = 20;
+            //fieldsEdit.AddField(nameField);
+            ////添加字段“终止点纬度”；
+            //nameField = new FieldClass();
+            //nameFieldEdit = (IFieldEdit)nameField;
+            //nameFieldEdit.Name_2 = "终止点纬度";
+            //nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            //nameFieldEdit.Length_2 = 20;
+            //fieldsEdit.AddField(nameField);
+            ////添加字段subPath_time
+            //nameField = new FieldClass();
+            //nameFieldEdit = (IFieldEdit)nameField;
+            //nameFieldEdit.Name_2 = "subPath_time(s)";
+            //nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            //nameFieldEdit.Length_2 = 20;
+            //fieldsEdit.AddField(nameField);
+            ////添加字段subPath_distance
+            //nameField = new FieldClass();
+            //nameFieldEdit = (IFieldEdit)nameField;
+            //nameFieldEdit.Name_2 = "subPath_distance(km)";
+            //nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            //nameFieldEdit.Length_2 = 20;
+            //fieldsEdit.AddField(nameField);
+            ////添加字段Area
+            //nameField = new FieldClass();
+            //nameFieldEdit = (IFieldEdit)nameField;
+            //nameFieldEdit.Name_2 = "Area";
+            //nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            //nameFieldEdit.Length_2 = 20;
+            //fieldsEdit.AddField(nameField);
+            ////添加字段Traffic_status
+            //nameField = new FieldClass();
+            //nameFieldEdit = (IFieldEdit)nameField;
+            //nameFieldEdit.Name_2 = "Traffic_status";
+            //nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            //nameFieldEdit.Length_2 = 20;
+            //fieldsEdit.AddField(nameField);
+
+            ////添加字段“长度”；
+            //nameField = new FieldClass();
+            //nameFieldEdit = (IFieldEdit)nameField;
+            //nameFieldEdit.Name_2 = "点对数";
+            //nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            //nameFieldEdit.Length_2 = 20;
+            //fieldsEdit.AddField(nameField);
 
             IFieldChecker fieldChecker = new FieldCheckerClass();
             IEnumFieldError enumFieldError = null;
@@ -1327,7 +1294,7 @@ namespace MakeShpFile
 
 
             System.IO.FileStream FScsv = new System.IO.FileStream(InputFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+            
             System.IO.StreamReader SRcsv = new System.IO.StreamReader(FScsv, utf8WithoutBom, true);
             string aryLine = "";
             IFeatureBuffer pFeatureBuffer = null;
@@ -1348,16 +1315,14 @@ namespace MakeShpFile
                     int index = aryLine.IndexOf('"');//第一个双引号在字符串中的位置
                     string aryLineFirst = aryLine.Substring(0, index - 1);
                     string[] aryLineFirstArray = aryLineFirst.Split(',');
-                    pFeatureBuffer.set_Value(2, aryLineFirstArray[0]);
-                    pFeatureBuffer.set_Value(3, aryLineFirstArray[1]);
 
-                    pFeatureBuffer.set_Value(4, aryLineFirstArray[2]);
-                    pFeatureBuffer.set_Value(5, aryLineFirstArray[3]);
-                    pFeatureBuffer.set_Value(6, aryLineFirstArray[4]);
-                    pFeatureBuffer.set_Value(7, aryLineFirstArray[5]);
-                    pFeatureBuffer.set_Value(8, aryLineFirstArray[6]);
-                    pFeatureBuffer.set_Value(9, aryLineFirstArray[7]);
-                    pFeatureBuffer.set_Value(10, aryLineFirstArray[8]);
+                    for (int it = 0; it < 9; it++)
+                    {
+                        if (DataStru_DS[it] == "string")
+                            pFeatureBuffer.set_Value(it + 2, aryLineFirstArray[it].ToString());
+                        else if (DataStru_DS[it] == "double")
+                            pFeatureBuffer.set_Value(it + 2, double.Parse(aryLineFirstArray[it].ToString()));
+                    }
 
                     string aryLineLast = aryLine.Substring(index + 1, aryLine.Length - index - 2); //下面几行通过分号个数计算点对数
                     string temp = aryLineLast;
@@ -1376,6 +1341,8 @@ namespace MakeShpFile
                         numOfpoint = SumOfpoint - int.Parse(aryLineFirstArray[10]);
                         pFeatureBuffer.set_Value(12, numOfpoint.ToString());
                     }
+                    if (numOfpoint == SumOfpoint)
+                        tt++;
                     if (SumOfpoint > 11000)
                     {
                         int time = SumOfpoint / 11000 + 1;
@@ -1414,13 +1381,13 @@ namespace MakeShpFile
                             t++;
                             tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
                         }
-                        Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
+                        Make_Polyline_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
                     }
                     else
                     {
                         string[] strArray = new string[1];
                         strArray[0] = aryLineLast;
-                        Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
+                        Make_Polyline_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
                     }
                 }
                 ProgressFm.setPos(50 / NumOfHead + (int)((num) / (double)(NumOfHead * NumOfRecord * 2) * 100));//设置进度条位置
@@ -1632,13 +1599,13 @@ namespace MakeShpFile
                         t++;
                         tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
                     }
-                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
+                    Make_Polyline_Feature2(pFeatureBuffer, pFeatureCursor, subAryLine);
                 }
                 else
                 {
                     string[] strArray = new string[1];
                     strArray[0] = aryLineLast;
-                    Make_Polylint_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
+                    Make_Polyline_Feature2(pFeatureBuffer, pFeatureCursor, strArray);
                 }
                 ProgressFm.setPos(50 / NumOfHead + (int)((num) / (double)(NumOfHead * NumOfRecord * 2) * 100));//设置进度条位置
             }
@@ -1819,7 +1786,7 @@ namespace MakeShpFile
             featureBuffer.Shape = pt;
             pFeatureCursor.InsertFeature(featureBuffer);
         }
-        public void Make_Polylint_Feature2(IFeatureBuffer featureBuffer,IFeatureCursor pFeatureCursor, string[] strArray)
+        public void Make_Polyline_Feature2(IFeatureBuffer featureBuffer,IFeatureCursor pFeatureCursor, string[] strArray)
         {   
             IPolyline py = new PolylineClass();
             IPointCollection ptc = py as IPointCollection;
@@ -1988,7 +1955,8 @@ namespace MakeShpFile
                     {
                         MessageBox.Show(ex.ToString());
                     }
-                    Car_Polyline_Routes(pFWS, shpName, InputFilePath);
+                    string DataStructureFile = shpDirectoryPath + "\\routes_DS.txt";
+                    Car_Polyline_Routes(pFWS, shpName, InputFilePath, DataStructureFile);
 
 
                     InputFilePath = csvFilePath + "_subpaths.csv";
@@ -2029,7 +1997,8 @@ namespace MakeShpFile
                     {
                         MessageBox.Show(ex.ToString());
                     }
-                    Car_Polyline_subPaths(pFWS, shpName, InputFilePath);
+                    DataStructureFile = shpDirectoryPath + "\\subPath_DS.txt";
+                    Car_Polyline_subPaths(pFWS, shpName, InputFilePath, DataStructureFile);
                 }
                 else if (VehicleMode == 2)
                 {
@@ -2368,6 +2337,17 @@ namespace MakeShpFile
                 spatialReference = spatialReferenceResolution as ISpatialReference;
             }
         }
+
+        private void Quit_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void ReadDb_menu_Click(object sender, EventArgs e)
+        {
+
+        }
+
 
     }
 }

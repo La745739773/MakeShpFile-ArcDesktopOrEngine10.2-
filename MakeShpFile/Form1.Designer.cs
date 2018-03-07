@@ -53,6 +53,11 @@
             this.label4 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
             this.ComboBox_Prjsystem = new System.Windows.Forms.ComboBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.FILE_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Quit_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.读取DB文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ReadDb_menu = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.axLicenseControl1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -61,11 +66,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.AxmapCtrl)).BeginInit();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // ReadExl
             // 
-            this.ReadExl.Location = new System.Drawing.Point(596, 28);
+            this.ReadExl.Location = new System.Drawing.Point(596, 38);
             this.ReadExl.Name = "ReadExl";
             this.ReadExl.Size = new System.Drawing.Size(106, 39);
             this.ReadExl.TabIndex = 2;
@@ -84,7 +90,7 @@
             // 
             // BtnOriginArrayRead
             // 
-            this.BtnOriginArrayRead.Location = new System.Drawing.Point(729, 28);
+            this.BtnOriginArrayRead.Location = new System.Drawing.Point(731, 38);
             this.BtnOriginArrayRead.Name = "BtnOriginArrayRead";
             this.BtnOriginArrayRead.Size = new System.Drawing.Size(106, 39);
             this.BtnOriginArrayRead.TabIndex = 5;
@@ -314,6 +320,52 @@
             this.ComboBox_Prjsystem.TabIndex = 0;
             this.ComboBox_Prjsystem.SelectedIndexChanged += new System.EventHandler(this.ComboBox_Prjsystem_SelectedIndexChanged);
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.FILE_ToolStripMenuItem,
+            this.读取DB文件ToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1114, 28);
+            this.menuStrip1.TabIndex = 16;
+            this.menuStrip1.Text = "Main_Menu";
+            // 
+            // FILE_ToolStripMenuItem
+            // 
+            this.FILE_ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Quit_ToolStripMenuItem});
+            this.FILE_ToolStripMenuItem.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.FILE_ToolStripMenuItem.Name = "FILE_ToolStripMenuItem";
+            this.FILE_ToolStripMenuItem.ShortcutKeyDisplayString = "";
+            this.FILE_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
+            this.FILE_ToolStripMenuItem.Size = new System.Drawing.Size(49, 24);
+            this.FILE_ToolStripMenuItem.Text = "文件";
+            // 
+            // Quit_ToolStripMenuItem
+            // 
+            this.Quit_ToolStripMenuItem.Name = "Quit_ToolStripMenuItem";
+            this.Quit_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this.Quit_ToolStripMenuItem.Size = new System.Drawing.Size(159, 24);
+            this.Quit_ToolStripMenuItem.Text = "退出";
+            this.Quit_ToolStripMenuItem.Click += new System.EventHandler(this.Quit_ToolStripMenuItem_Click);
+            // 
+            // 读取DB文件ToolStripMenuItem
+            // 
+            this.读取DB文件ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ReadDb_menu});
+            this.读取DB文件ToolStripMenuItem.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.读取DB文件ToolStripMenuItem.Name = "读取DB文件ToolStripMenuItem";
+            this.读取DB文件ToolStripMenuItem.Size = new System.Drawing.Size(97, 24);
+            this.读取DB文件ToolStripMenuItem.Text = "DB文件处理";
+            // 
+            // ReadDb_menu
+            // 
+            this.ReadDb_menu.Name = "ReadDb_menu";
+            this.ReadDb_menu.Size = new System.Drawing.Size(187, 24);
+            this.ReadDb_menu.Text = "读取Rout.db文件";
+            this.ReadDb_menu.Click += new System.EventHandler(this.ReadDb_menu_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -331,7 +383,9 @@
             this.Controls.Add(this.BtnOriginArrayRead);
             this.Controls.Add(this.axLicenseControl1);
             this.Controls.Add(this.ReadExl);
+            this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Form1";
@@ -346,7 +400,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.AxmapCtrl)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -376,6 +433,11 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.ComboBox ComboBox_Prjsystem;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem FILE_ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem Quit_ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 读取DB文件ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ReadDb_menu;
     }
 }
 

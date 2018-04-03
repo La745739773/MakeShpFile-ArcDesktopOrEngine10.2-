@@ -43,8 +43,6 @@
             this.PointRBtn = new System.Windows.Forms.RadioButton();
             this.PolylineRBtn = new System.Windows.Forms.RadioButton();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.MYTOCControl = new ESRI.ArcGIS.Controls.AxTOCControl();
-            this.AxmapCtrl = new ESRI.ArcGIS.Controls.AxMapControl();
             this.panel4 = new System.Windows.Forms.Panel();
             this.ComboBox_GeoSystem = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -58,15 +56,19 @@
             this.Quit_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.读取DB文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ReadDb_menu = new System.Windows.Forms.ToolStripMenuItem();
+            this.DelFeature_byAttritute = new System.Windows.Forms.ToolStripMenuItem();
+            this.MYTOCControl = new ESRI.ArcGIS.Controls.AxTOCControl();
+            this.AxmapCtrl = new ESRI.ArcGIS.Controls.AxMapControl();
+            this.AddShpFile = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.axLicenseControl1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.MYTOCControl)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AxmapCtrl)).BeginInit();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.MYTOCControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.AxmapCtrl)).BeginInit();
             this.SuspendLayout();
             // 
             // ReadExl
@@ -228,22 +230,6 @@
             this.panel3.Size = new System.Drawing.Size(626, 445);
             this.panel3.TabIndex = 13;
             // 
-            // MYTOCControl
-            // 
-            this.MYTOCControl.Location = new System.Drawing.Point(3, 3);
-            this.MYTOCControl.Name = "MYTOCControl";
-            this.MYTOCControl.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("MYTOCControl.OcxState")));
-            this.MYTOCControl.Size = new System.Drawing.Size(155, 435);
-            this.MYTOCControl.TabIndex = 1;
-            // 
-            // AxmapCtrl
-            // 
-            this.AxmapCtrl.Location = new System.Drawing.Point(164, 3);
-            this.AxmapCtrl.Name = "AxmapCtrl";
-            this.AxmapCtrl.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("AxmapCtrl.OcxState")));
-            this.AxmapCtrl.Size = new System.Drawing.Size(494, 435);
-            this.AxmapCtrl.TabIndex = 0;
-            // 
             // panel4
             // 
             this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -334,6 +320,8 @@
             // FILE_ToolStripMenuItem
             // 
             this.FILE_ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.DelFeature_byAttritute,
+            this.AddShpFile,
             this.Quit_ToolStripMenuItem});
             this.FILE_ToolStripMenuItem.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.FILE_ToolStripMenuItem.Name = "FILE_ToolStripMenuItem";
@@ -346,7 +334,7 @@
             // 
             this.Quit_ToolStripMenuItem.Name = "Quit_ToolStripMenuItem";
             this.Quit_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.Quit_ToolStripMenuItem.Size = new System.Drawing.Size(159, 24);
+            this.Quit_ToolStripMenuItem.Size = new System.Drawing.Size(190, 24);
             this.Quit_ToolStripMenuItem.Text = "退出";
             this.Quit_ToolStripMenuItem.Click += new System.EventHandler(this.Quit_ToolStripMenuItem_Click);
             // 
@@ -365,6 +353,36 @@
             this.ReadDb_menu.Size = new System.Drawing.Size(187, 24);
             this.ReadDb_menu.Text = "读取Rout.db文件";
             this.ReadDb_menu.Click += new System.EventHandler(this.ReadDb_menu_Click);
+            // 
+            // DelFeature_byAttritute
+            // 
+            this.DelFeature_byAttritute.Name = "DelFeature_byAttritute";
+            this.DelFeature_byAttritute.Size = new System.Drawing.Size(190, 24);
+            this.DelFeature_byAttritute.Text = "根据属性删除要素";
+            this.DelFeature_byAttritute.Click += new System.EventHandler(this.DelFeature_byAttritute_Click);
+            // 
+            // MYTOCControl
+            // 
+            this.MYTOCControl.Location = new System.Drawing.Point(3, 3);
+            this.MYTOCControl.Name = "MYTOCControl";
+            this.MYTOCControl.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("MYTOCControl.OcxState")));
+            this.MYTOCControl.Size = new System.Drawing.Size(155, 435);
+            this.MYTOCControl.TabIndex = 1;
+            // 
+            // AxmapCtrl
+            // 
+            this.AxmapCtrl.Location = new System.Drawing.Point(164, 3);
+            this.AxmapCtrl.Name = "AxmapCtrl";
+            this.AxmapCtrl.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("AxmapCtrl.OcxState")));
+            this.AxmapCtrl.Size = new System.Drawing.Size(494, 435);
+            this.AxmapCtrl.TabIndex = 0;
+            // 
+            // AddShpFile
+            // 
+            this.AddShpFile.Name = "AddShpFile";
+            this.AddShpFile.Size = new System.Drawing.Size(190, 24);
+            this.AddShpFile.Text = "添加Shp数据";
+            this.AddShpFile.Click += new System.EventHandler(this.AddShpFile_Click);
             // 
             // Form1
             // 
@@ -396,12 +414,12 @@
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.panel3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.MYTOCControl)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AxmapCtrl)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.MYTOCControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.AxmapCtrl)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -438,6 +456,8 @@
         private System.Windows.Forms.ToolStripMenuItem Quit_ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 读取DB文件ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ReadDb_menu;
+        private System.Windows.Forms.ToolStripMenuItem DelFeature_byAttritute;
+        private System.Windows.Forms.ToolStripMenuItem AddShpFile;
     }
 }
 

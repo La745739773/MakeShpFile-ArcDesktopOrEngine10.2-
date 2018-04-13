@@ -57,10 +57,13 @@ namespace MakeShpFile
             CarModeRBtn.Checked = true;
             PolylineRBtn.Checked = true;
             //为下拉框添加数据esriSRProjCS_ esriSRGeoCS_
+            ComboBox_Prjsystem.Items.Add("WGS1984_TM_6_NE");
             ComboBox_Prjsystem.Items.Add("Xian1980_3_Degree_GK_CM_117E");
             ComboBox_Prjsystem.Items.Add("Beijing1954_3_Degree_GK_CM_120E");
+            ComboBox_GeoSystem.Items.Add("WGS1984");
             ComboBox_GeoSystem.Items.Add("Xian1980");
             ComboBox_GeoSystem.Items.Add("Beijing1954");
+                        
             ComboBox_Prjsystem.SelectedIndex = 0;
             ComboBox_GeoSystem.SelectedIndex = 0;
             //spatialReferenceFactory = new SpatialReferenceEnvironmentClass();
@@ -78,6 +81,48 @@ namespace MakeShpFile
             //spatialReferenceTolerance2.SetDefaultXYTolerance();
             //spatialReference2 = spatialReferenceResolution2 as ISpatialReference;
         }
+        private void ComboBox_Prjsystem_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string var = "esriSRProjCS_" + ComboBox_Prjsystem.Text;
+            
+            proSystem = (esriSRProjCS4Type)Enum.Parse(typeof(esriSRProjCS4Type), var);
+            spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
+            spatialReferenceResolution2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem(Convert.ToInt32(proSystem)) as ISpatialReferenceResolution;
+            spatialReferenceResolution2.ConstructFromHorizon();
+            spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
+            spatialReferenceTolerance2.SetDefaultXYTolerance();
+            spatialReference2 = spatialReferenceResolution2 as ISpatialReference;
+        }
+
+        private void ComboBox_GeoSystem_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //ComboBox_Prjsystem.SelectedIndex = ComboBox_GeoSystem.SelectedIndex;
+            string var = "esriSRGeoCS_" + ComboBox_GeoSystem.Text;
+
+            try
+            {
+                geoSystem = (esriSRGeoCSType)Enum.Parse(typeof(esriSRGeoCSType), var);
+                spatialReferenceFactory = new SpatialReferenceEnvironmentClass();
+                spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
+                spatialReferenceResolution.ConstructFromHorizon();
+                spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
+                spatialReferenceTolerance.SetDefaultXYTolerance();
+                spatialReference = spatialReferenceResolution as ISpatialReference;
+            }
+            catch (System.Exception ex)
+            {
+                geo3System = (esriSRGeoCS3Type)Enum.Parse(typeof(esriSRGeoCS3Type), var);
+                spatialReferenceFactory = new SpatialReferenceEnvironmentClass();
+                spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geo3System)) as ISpatialReferenceResolution;
+                spatialReferenceResolution.ConstructFromHorizon();
+                spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
+                spatialReferenceTolerance.SetDefaultXYTolerance();
+                spatialReference = spatialReferenceResolution as ISpatialReference;
+            }
+        }
+
+
+
         /// 给定文件的路径，读取文件的二进制数据，判断文件的编码类型  
         /// <param name="FILE_NAME">文件路径</param>  
         /// <returns>文件的编码类型</returns>  
@@ -320,7 +365,15 @@ namespace MakeShpFile
                     if (DataStru_DS[it] == "string")
                         pFeatureBuffer.set_Value(it + 2, aryLineFirstArray[it].ToString());
                     else if (DataStru_DS[it] == "double")
-                        pFeatureBuffer.set_Value(it + 2, double.Parse(aryLineFirstArray[it].ToString()));
+                        try
+                        {
+                            pFeatureBuffer.set_Value(it + 2, double.Parse(aryLineFirstArray[it].ToString()));
+                        }
+                        catch (System.Exception ex)
+                        {
+                            pFeatureBuffer.set_Value(it + 2,-1);
+                        }
+             
                 }
                 string SumPath = aryLineLast;
 
@@ -2294,43 +2347,7 @@ namespace MakeShpFile
             MessageBox.Show("Finished! " + (ts2.TotalMilliseconds / 1000).ToString());
         }
 
-        private void ComboBox_Prjsystem_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string var = "esriSRProjCS_" + ComboBox_Prjsystem.Text;
-            proSystem = (esriSRProjCS4Type)Enum.Parse(typeof(esriSRProjCS4Type), var);
-            spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();
-            spatialReferenceResolution2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem(Convert.ToInt32(proSystem)) as ISpatialReferenceResolution;
-            spatialReferenceResolution2.ConstructFromHorizon();
-            spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
-            spatialReferenceTolerance2.SetDefaultXYTolerance();
-            spatialReference2 = spatialReferenceResolution2 as ISpatialReference;
-        }
 
-        private void ComboBox_GeoSystem_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //ComboBox_Prjsystem.SelectedIndex = ComboBox_GeoSystem.SelectedIndex;
-            string var = "esriSRGeoCS_" + ComboBox_GeoSystem.Text;
-            try
-            {
-                geoSystem = (esriSRGeoCSType)Enum.Parse(typeof(esriSRGeoCSType), var);
-                spatialReferenceFactory = new SpatialReferenceEnvironmentClass();
-                spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
-                spatialReferenceResolution.ConstructFromHorizon();
-                spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
-                spatialReferenceTolerance.SetDefaultXYTolerance();
-                spatialReference = spatialReferenceResolution as ISpatialReference;
-            }
-            catch (System.Exception ex)
-            {
-                geo3System = (esriSRGeoCS3Type)Enum.Parse(typeof(esriSRGeoCS3Type), var);
-                spatialReferenceFactory = new SpatialReferenceEnvironmentClass();
-                spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geo3System)) as ISpatialReferenceResolution;
-                spatialReferenceResolution.ConstructFromHorizon();
-                spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
-                spatialReferenceTolerance.SetDefaultXYTolerance();
-                spatialReference = spatialReferenceResolution as ISpatialReference;
-            }
-        }
 
         private void Quit_ToolStripMenuItem_Click(object sender, EventArgs e)
         {

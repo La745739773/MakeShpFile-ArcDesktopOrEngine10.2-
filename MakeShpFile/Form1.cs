@@ -1599,7 +1599,7 @@ namespace MakeShpFile
             FScsv.Close();
         }
         int num = 0;
-        private void Accessibility_POI_Points(IFeatureWorkspace pFWS, string shpName, string InputFilePath)
+        private void Accessibility_POI_Points(IFeatureWorkspace pFWS, string shpName, string InputFilePath, string DataStructureFile)
         {
             //开始添加属性字段；
             IFields fields = new FieldsClass();
@@ -1615,35 +1615,20 @@ namespace MakeShpFile
             IGeometryDef geometryDef = new GeometryDefClass();
             IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
             geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPoint;
-
-            //地理坐标系
-            //ISpatialReferenceFactory spatialReferenceFactory = new SpatialReferenceEnvironmentClass(); // GCS_Beijing_1954
-            //esriSRGeoCS3Type geoSystem = esriSRGeoCS3Type.esriSRGeoCS_Xian1980;
-            //ISpatialReferenceResolution spatialReferenceResolution = spatialReferenceFactory.CreateGeographicCoordinateSystem(Convert.ToInt32(geoSystem)) as ISpatialReferenceResolution;
-            //spatialReferenceResolution.ConstructFromHorizon();
-            //ISpatialReferenceTolerance spatialReferenceTolerance = spatialReferenceResolution as ISpatialReferenceTolerance;
-            //spatialReferenceTolerance.SetDefaultXYTolerance();
-            //ISpatialReference spatialReference = spatialReferenceResolution as ISpatialReference;
-            ////geometryDefEdit.SpatialReference_2 = spatialReference;
-            
-            ////投影坐标系
-            //ISpatialReferenceFactory spatialReferenceFactory2 = new SpatialReferenceEnvironmentClass();//Xian_1980_3_Degree_GK_CM_117E
-            //esriSRProjCS4Type proSystem = esriSRProjCS4Type.esriSRProjCS_Xian1980_3_Degree_GK_CM_117E;
-            //ISpatialReferenceResolution spatialReferenceResolution2 = spatialReferenceFactory2.CreateProjectedCoordinateSystem(Convert.ToInt32(proSystem)) as ISpatialReferenceResolution;
-            //spatialReferenceResolution2.ConstructFromHorizon();
-            //ISpatialReferenceTolerance spatialReferenceTolerance2 = spatialReferenceResolution2 as ISpatialReferenceTolerance;
-            //spatialReferenceTolerance2.SetDefaultXYTolerance();
-            //ISpatialReference spatialReference2 = spatialReferenceResolution2 as ISpatialReference;
             geometryDefEdit.SpatialReference_2 = spatialReference2;
 
-
-
-            System.IO.FileStream FScsv = new System.IO.FileStream(InputFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
             var utf8WithoutBom = new System.Text.UTF8Encoding(false);
-            System.IO.StreamReader SRcsv = new System.IO.StreamReader(FScsv, utf8WithoutBom, true);
-            string aryLine = "";
-            aryLine = SRcsv.ReadLine();
-            string[] columnArray = aryLine.Split(',');
+            System.IO.FileStream DataStructureFileFS = new System.IO.FileStream(DataStructureFile, FileMode.Open);
+            System.IO.StreamReader DataStructureFileSR = new System.IO.StreamReader(DataStructureFileFS, utf8WithoutBom);
+            string DataStru = DataStructureFileSR.ReadLine();
+            string[] DataStru_Array = DataStru.Split(' ');
+            string[] DataStru_Name = new string[DataStru_Array.Length];
+            string[] DataStru_DS = new string[DataStru_Array.Length];
+            DataStructureFileSR.Close();
+            DataStructureFileFS.Close();
+
+
+
 
             //添加字段“Shape”;
             IField geometryField = new FieldClass();
@@ -1655,16 +1640,37 @@ namespace MakeShpFile
             IField nameField = new FieldClass();
             IFieldEdit nameFieldEdit = (IFieldEdit)nameField;
 
-            for (int i = 0; i < columnArray.Length; i++)
+            for (int jj = 0; jj < DataStru_Array.Length; jj++)
             {
-                //添加字段Name
+                int index = DataStru_Array[jj].IndexOf('(');
+                DataStru_Name[jj] = DataStru_Array[jj].Substring(0, index);
+                DataStru_DS[jj] = DataStru_Array[jj].Substring(index + 1, DataStru_Array[jj].Length - 2 - index);
+            }
+            for (int jj = 0; jj < DataStru_Array.Length; jj++)
+            {
                 nameField = new FieldClass();
                 nameFieldEdit = (IFieldEdit)nameField;
-                nameFieldEdit.Name_2 = columnArray[i];
-                nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                nameFieldEdit.Name_2 = DataStru_Name[jj].ToString();
+                if (DataStru_DS[jj] == "string")
+                {
+                    nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                }
+                else if (DataStru_DS[jj] == "double")
+                    nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
                 nameFieldEdit.Length_2 = 200;
                 fieldsEdit.AddField(nameField);
             }
+
+            //for (int i = 0; i < columnArray.Length; i++)
+            //{
+            //    //添加字段Name
+            //    nameField = new FieldClass();
+            //    nameFieldEdit = (IFieldEdit)nameField;
+            //    nameFieldEdit.Name_2 = columnArray[i];
+            //    nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+            //    nameFieldEdit.Length_2 = 200;
+            //    fieldsEdit.AddField(nameField);
+            //}
            
             IFieldChecker fieldChecker = new FieldCheckerClass();
             IEnumFieldError enumFieldError = null;
@@ -1676,6 +1682,9 @@ namespace MakeShpFile
             IFeatureBuffer pFeatureBuffer = null;
             IFeatureCursor pFeatureCursor = null;
             string Type = shpName;
+            System.IO.FileStream FScsv = new System.IO.FileStream(InputFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            System.IO.StreamReader SRcsv = new System.IO.StreamReader(FScsv, utf8WithoutBom, true);
+            string aryLine = "";
             while ((aryLine = SRcsv.ReadLine()) != null)
             {
                 NumOfRecord++;
@@ -1689,12 +1698,27 @@ namespace MakeShpFile
                 pFeatureBuffer = pNewFeaCls.CreateFeatureBuffer();
                 pFeatureCursor = pNewFeaCls.Insert(true);
                 string[] aryLineFirstArray = aryLine.Split(',');
-                int length = aryLineFirstArray.Length;
-                for (int i = 0; i < length; i++)
+                //int length = aryLineFirstArray.Length;
+                //for (int i = 0; i < length; i++)
+                //{
+                //    pFeatureBuffer.set_Value(i+2, aryLineFirstArray[i]);
+                //}
+                int length = DataStru_DS.Length;
+                for (int it = 0; it < DataStru_DS.Length; it++)
                 {
-                    pFeatureBuffer.set_Value(i+2, aryLineFirstArray[i]);
+                    if (DataStru_DS[it] == "string")
+                        pFeatureBuffer.set_Value(it + 2, aryLineFirstArray[it].ToString());
+                    else if (DataStru_DS[it] == "double")
+                        try
+                        {
+                            pFeatureBuffer.set_Value(it + 2, double.Parse(aryLineFirstArray[it].ToString()));
+                        }
+                        catch (System.Exception ex)
+                        {
+                            pFeatureBuffer.set_Value(it + 2, -1);
+                        }
                 }
-                Make_Point_Feature(pFeatureBuffer, pFeatureCursor, aryLineFirstArray[length - 2], aryLineFirstArray[length - 1]);//Lng lat
+                Make_Point_Feature(pFeatureBuffer, pFeatureCursor, aryLineFirstArray[length - 1], aryLineFirstArray[length - 2]);//Lng lat
                 ProgressFm.setPos((int)((num) / (double) NumOfRecord * 100));//设置进度条位置
             }
             SRcsv.Close();
@@ -2228,7 +2252,8 @@ namespace MakeShpFile
                     {
                         MessageBox.Show(ex.ToString());
                     }
-                    Accessibility_POI_Points(pFWS, shpName, InputFilePath);
+                    string DataStructureFile = shpDirectoryPath + "\\Point_DS.txt";
+                    Accessibility_POI_Points(pFWS, shpName, InputFilePath, DataStructureFile);
                 }
             }
             else if (DataMode == 1)  //polyline

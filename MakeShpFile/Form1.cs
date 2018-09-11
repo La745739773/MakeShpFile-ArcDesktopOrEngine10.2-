@@ -1694,32 +1694,40 @@ namespace MakeShpFile
             aryLine = SRcsv.ReadLine();
             while ((aryLine = SRcsv.ReadLine()) != null)
             {
-                num++;
-                pFeatureBuffer = pNewFeaCls.CreateFeatureBuffer();
-                pFeatureCursor = pNewFeaCls.Insert(true);
-                string[] aryLineFirstArray = aryLine.Split(',');
-                //int length = aryLineFirstArray.Length;
-                //for (int i = 0; i < length; i++)
-                //{
-                //    pFeatureBuffer.set_Value(i+2, aryLineFirstArray[i]);
-                //}
-                int length = DataStru_DS.Length;
-                for (int it = 0; it < DataStru_DS.Length; it++)
+                try
                 {
-                    if (DataStru_DS[it] == "string")
-                        pFeatureBuffer.set_Value(it + 2, aryLineFirstArray[it].ToString());
-                    else if (DataStru_DS[it] == "double")
-                        try
-                        {
-                            pFeatureBuffer.set_Value(it + 2, double.Parse(aryLineFirstArray[it].ToString()));
-                        }
-                        catch (System.Exception ex)
-                        {
-                            pFeatureBuffer.set_Value(it + 2, -1);
-                        }
+                    num++;
+                    pFeatureBuffer = pNewFeaCls.CreateFeatureBuffer();
+                    pFeatureCursor = pNewFeaCls.Insert(true);
+                    string[] aryLineFirstArray = aryLine.Split(',');
+                    //int length = aryLineFirstArray.Length;
+                    //for (int i = 0; i < length; i++)
+                    //{
+                    //    pFeatureBuffer.set_Value(i+2, aryLineFirstArray[i]);
+                    //}
+                    int length = DataStru_DS.Length;
+                    for (int it = 0; it < DataStru_DS.Length; it++)
+                    {
+                        if (DataStru_DS[it] == "string")
+                            pFeatureBuffer.set_Value(it + 2, aryLineFirstArray[it].ToString());
+                        else if (DataStru_DS[it] == "double")
+                            try
+                            {
+                                pFeatureBuffer.set_Value(it + 2, double.Parse(aryLineFirstArray[it].ToString()));
+                            }
+                            catch (System.Exception ex)
+                            {
+                                pFeatureBuffer.set_Value(it + 2, -1);
+                            }
+                    }
+                    Make_Point_Feature(pFeatureBuffer, pFeatureCursor, aryLineFirstArray[length - 1], aryLineFirstArray[length - 2]);//Lng lat
+                    ProgressFm.setPos((int)((num) / (double)NumOfRecord * 100));//设置进度条位置
                 }
-                Make_Point_Feature(pFeatureBuffer, pFeatureCursor, aryLineFirstArray[length - 1], aryLineFirstArray[length - 2]);//Lng lat
-                ProgressFm.setPos((int)((num) / (double) NumOfRecord * 100));//设置进度条位置
+                catch (System.Exception ex)
+                {
+                    MessageBox.Show(aryLine);
+                }
+
             }
             SRcsv.Close();
             FScsv.Close();
@@ -2188,137 +2196,145 @@ namespace MakeShpFile
 
         private void ReadExl_Click(object sender, EventArgs e)
         {
-            if (DataMode == -1 || VehicleMode == -1)
-            {
-                MessageBox.Show("未选择交通方式或要素类型！");
-                return;
-            }
-            ProgressFm = new ProgressBar(2, 100);
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            ProgressFm.Show(this);
-            if (DataMode == 2)//point
-            {
-                if (VehicleMode == 5)
+            //try
+            //{
+                if (DataMode == -1 || VehicleMode == -1)
                 {
-                    OpenFileDialog ofd = new OpenFileDialog();
-                    var utf8WithoutBom = new System.Text.UTF8Encoding(false);
-                    ofd.Filter = "csv文件(*.csv;*.csv)|*.csv;*.csv|所有文件|*.*";
-                    ofd.ValidateNames = true;
-                    ofd.CheckPathExists = true;
-                    ofd.CheckFileExists = true;
-                    if (ofd.ShowDialog() != DialogResult.OK)
-                    {
-                        return;
-                    }
-                    string path = ofd.FileName;
-
-
-                    string InputFilePath = ofd.FileName;
-                    string shpDirectoryPath = System.IO.Path.GetDirectoryName(InputFilePath);
-                    string shpName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
-                    string shpFullName = shpName + ".shp";
-                    string prjName = shpName + ".prj";
-                    string dbfName = shpName + ".dbf";
-                    string shxName = shpName + ".shx";
-                    string sbnName = shpName + ".sbn";
-                    string xmlName = shpName + ".shp.xml";
-                    string sbxName = shpName + ".sbx";
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + shpFullName))
-                        System.IO.File.Delete(shpDirectoryPath + "\\" + shpFullName);
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + prjName))
-                        System.IO.File.Delete(shpDirectoryPath + "\\" + prjName);
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + dbfName))
-                        System.IO.File.Delete(shpDirectoryPath + "\\" + dbfName);
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + shxName))
-                        System.IO.File.Delete(shpDirectoryPath + shxName);
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbnName))
-                        System.IO.File.Delete(shpDirectoryPath + "\\" + sbnName);
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + xmlName))
-                        System.IO.File.Delete(shpDirectoryPath + "\\" + xmlName);
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbxName))
-                        System.IO.File.Delete(shpDirectoryPath + "\\" + sbxName);
-                    //生成shp
-                    string shpFileName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
-                    //打开生成shapefile的工作空间；
-                    IFeatureWorkspace pFWS = null;
-                    IWorkspaceFactory pWSF = new ShapefileWorkspaceFactoryClass();
-                    try
-                    {
-                        IWorkspace pWs = pWSF.OpenFromFile(shpDirectoryPath + "\\", 0);
-                        pFWS = pWs as IFeatureWorkspace;
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                    string DataStructureFile = shpDirectoryPath + "\\Point_DS.txt";
-                    Accessibility_POI_Points(pFWS, shpName, InputFilePath, DataStructureFile);
+                    MessageBox.Show("未选择交通方式或要素类型！");
+                    return;
                 }
-            }
-            else if (DataMode == 1)  //polyline
-            {
-                if (VehicleMode == 5)
+                ProgressFm = new ProgressBar(2, 100);
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                ProgressFm.Show(this);
+                if (DataMode == 2)//point
                 {
-                    string DataStructureFile;
-                    OpenFileDialog ofd = new OpenFileDialog();
-                    var utf8WithoutBom = new System.Text.UTF8Encoding(false);
-                    ofd.Filter = "csv文件(*.csv;*.csv)|*.csv;*.csv|所有文件|*.*";
-                    ofd.ValidateNames = true;
-                    ofd.CheckPathExists = true;
-                    ofd.CheckFileExists = true;
-                    if (ofd.ShowDialog() != DialogResult.OK)
+                    if (VehicleMode == 5)
                     {
-                        return;
-                    }
-                    string path = ofd.FileName;
+                        OpenFileDialog ofd = new OpenFileDialog();
+                        var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+                        ofd.Filter = "csv文件(*.csv;*.csv)|*.csv;*.csv|所有文件|*.*";
+                        ofd.ValidateNames = true;
+                        ofd.CheckPathExists = true;
+                        ofd.CheckFileExists = true;
+                        if (ofd.ShowDialog() != DialogResult.OK)
+                        {
+                            return;
+                        }
+                        string path = ofd.FileName;
 
-                    string InputFilePath = ofd.FileName;
-                    string shpDirectoryPath = System.IO.Path.GetDirectoryName(InputFilePath);
-                    string shpName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
-                    string shpFullName = shpName + ".shp";
-                    string prjName = shpName + ".prj";
-                    string dbfName = shpName + ".dbf";
-                    string shxName = shpName + ".shx";
-                    string sbnName = shpName + ".sbn";
-                    string xmlName = shpName + ".shp.xml";
-                    string sbxName = shpName + ".sbx";
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + shpFullName))
-                        System.IO.File.Delete(shpDirectoryPath + "\\" + shpFullName);
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + prjName))
-                        System.IO.File.Delete(shpDirectoryPath + "\\" + prjName);
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + dbfName))
-                        System.IO.File.Delete(shpDirectoryPath + "\\" + dbfName);
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + shxName))
-                        System.IO.File.Delete(shpDirectoryPath + shxName);
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbnName))
-                        System.IO.File.Delete(shpDirectoryPath + "\\" + sbnName);
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + xmlName))
-                        System.IO.File.Delete(shpDirectoryPath + "\\" + xmlName);
-                    if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbxName))
-                        System.IO.File.Delete(shpDirectoryPath + "\\" + sbxName);
-                    //生成shp
-                    string shpFileName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
-                    //打开生成shapefile的工作空间；
-                    IFeatureWorkspace pFWS = null;
-                    IWorkspaceFactory pWSF = new ShapefileWorkspaceFactoryClass();
-                    try
-                    {
-                        IWorkspace pWs = pWSF.OpenFromFile(shpDirectoryPath + "\\", 0);
-                        pFWS = pWs as IFeatureWorkspace;
+
+                        string InputFilePath = ofd.FileName;
+                        string shpDirectoryPath = System.IO.Path.GetDirectoryName(InputFilePath);
+                        string shpName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
+                        string shpFullName = shpName + ".shp";
+                        string prjName = shpName + ".prj";
+                        string dbfName = shpName + ".dbf";
+                        string shxName = shpName + ".shx";
+                        string sbnName = shpName + ".sbn";
+                        string xmlName = shpName + ".shp.xml";
+                        string sbxName = shpName + ".sbx";
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + shpFullName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + shpFullName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + prjName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + prjName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + dbfName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + dbfName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + shxName))
+                            System.IO.File.Delete(shpDirectoryPath + shxName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbnName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + sbnName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + xmlName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + xmlName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbxName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + sbxName);
+                        //生成shp
+                        string shpFileName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
+                        //打开生成shapefile的工作空间；
+                        IFeatureWorkspace pFWS = null;
+                        IWorkspaceFactory pWSF = new ShapefileWorkspaceFactoryClass();
+                        try
+                        {
+                            IWorkspace pWs = pWSF.OpenFromFile(shpDirectoryPath + "\\", 0);
+                            pFWS = pWs as IFeatureWorkspace;
+                        }
+                        catch (System.Exception ex)
+                        {
+                            MessageBox.Show(ex.ToString());
+                        }
+                        string DataStructureFile = shpDirectoryPath + "\\Point_DS.txt";
+                        Accessibility_POI_Points(pFWS, shpName, InputFilePath, DataStructureFile);
                     }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                    DataStructureFile = shpDirectoryPath + "\\Path_DS.txt";
-                    Default_Polyline_Routes(pFWS, shpName, InputFilePath, DataStructureFile);
                 }
-            }
-            sw.Stop();
-            TimeSpan ts2 = sw.Elapsed;
-            ProgressFm.Close();
-            MessageBox.Show("Finished! " + (ts2.TotalMilliseconds / 1000).ToString());
+                else if (DataMode == 1)  //polyline
+                {
+                    if (VehicleMode == 5)
+                    {
+                        string DataStructureFile;
+                        OpenFileDialog ofd = new OpenFileDialog();
+                        var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+                        ofd.Filter = "csv文件(*.csv;*.csv)|*.csv;*.csv|所有文件|*.*";
+                        ofd.ValidateNames = true;
+                        ofd.CheckPathExists = true;
+                        ofd.CheckFileExists = true;
+                        if (ofd.ShowDialog() != DialogResult.OK)
+                        {
+                            return;
+                        }
+                        string path = ofd.FileName;
+
+                        string InputFilePath = ofd.FileName;
+                        string shpDirectoryPath = System.IO.Path.GetDirectoryName(InputFilePath);
+                        string shpName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
+                        string shpFullName = shpName + ".shp";
+                        string prjName = shpName + ".prj";
+                        string dbfName = shpName + ".dbf";
+                        string shxName = shpName + ".shx";
+                        string sbnName = shpName + ".sbn";
+                        string xmlName = shpName + ".shp.xml";
+                        string sbxName = shpName + ".sbx";
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + shpFullName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + shpFullName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + prjName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + prjName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + dbfName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + dbfName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + shxName))
+                            System.IO.File.Delete(shpDirectoryPath + shxName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbnName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + sbnName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + xmlName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + xmlName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbxName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + sbxName);
+                        //生成shp
+                        string shpFileName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
+                        //打开生成shapefile的工作空间；
+                        IFeatureWorkspace pFWS = null;
+                        IWorkspaceFactory pWSF = new ShapefileWorkspaceFactoryClass();
+                        try
+                        {
+                            IWorkspace pWs = pWSF.OpenFromFile(shpDirectoryPath + "\\", 0);
+                            pFWS = pWs as IFeatureWorkspace;
+                        }
+                        catch (System.Exception ex)
+                        {
+                            MessageBox.Show(ex.ToString());
+                        }
+                        DataStructureFile = shpDirectoryPath + "\\Path_DS.txt";
+                        Default_Polyline_Routes(pFWS, shpName, InputFilePath, DataStructureFile);
+                    }
+                }
+                sw.Stop();
+                TimeSpan ts2 = sw.Elapsed;
+                ProgressFm.Close();
+                MessageBox.Show("Finished! " + (ts2.TotalMilliseconds / 1000).ToString());
+            //}
+            //catch (System.Exception ex)
+            //{
+            //    MessageBox.Show(ex.ToString());
+            //}
+
         }
 
         private void BtnOriginArrayRead_Click(object sender, EventArgs e)

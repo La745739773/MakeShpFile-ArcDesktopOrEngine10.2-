@@ -431,6 +431,169 @@ namespace MakeShpFile
             SR_Routescsv.Close();
             FS_Routescsv.Close();
         }
+        private void Default_Polygon_curves(IFeatureWorkspace pFWS, string shpName, string InputFilePath, string DataStructureFile)
+        {
+            //开始添加属性字段；
+            IFields fields = new FieldsClass();
+            IFieldsEdit fieldsEdit = (IFieldsEdit)fields;
+            //添加字段“OID”；
+            IField oidField = new FieldClass();
+            IFieldEdit oidFieldEdit = (IFieldEdit)oidField;
+            oidFieldEdit.Name_2 = "OID";
+            oidFieldEdit.Type_2 = esriFieldType.esriFieldTypeOID;
+            fieldsEdit.AddField(oidField);
+            //设置生成图的空间坐标参考系统；
+            IGeometryDef geometryDef = new GeometryDefClass();
+            IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
+            geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolygon;
+            geometryDefEdit.SpatialReference_2 = spatialReference2;
+
+
+            var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+
+            System.IO.FileStream DataStructureFileFS = new System.IO.FileStream(DataStructureFile, FileMode.Open);
+            System.IO.StreamReader DataStructureFileSR = new System.IO.StreamReader(DataStructureFileFS, utf8WithoutBom);
+            string DataStru = DataStructureFileSR.ReadLine();
+            string[] DataStru_Array = DataStru.Split(' ');
+            string[] DataStru_Name = new string[DataStru_Array.Length];
+            string[] DataStru_DS = new string[DataStru_Array.Length];
+            DataStructureFileSR.Close();
+            DataStructureFileFS.Close();
+
+
+            //添加字段“Shape”;
+            IField geometryField = new FieldClass();
+            IFieldEdit geometryFieldEdit = (IFieldEdit)geometryField;
+            geometryFieldEdit.Name_2 = "Shape";
+            geometryFieldEdit.Type_2 = esriFieldType.esriFieldTypeGeometry; 
+            geometryFieldEdit.GeometryDef_2 = geometryDef;
+            fieldsEdit.AddField(geometryField);
+            IField nameField = new FieldClass();
+            IFieldEdit nameFieldEdit = (IFieldEdit)nameField;
+
+
+            for (int jj = 0; jj < DataStru_Array.Length; jj++)
+            {
+                int index = DataStru_Array[jj].IndexOf('(');
+                DataStru_Name[jj] = DataStru_Array[jj].Substring(0, index);
+                DataStru_DS[jj] = DataStru_Array[jj].Substring(index + 1, DataStru_Array[jj].Length - 2 - index);
+            }
+            for (int jj = 0; jj < DataStru_Array.Length; jj++)
+            {
+                nameField = new FieldClass();
+                nameFieldEdit = (IFieldEdit)nameField;
+                nameFieldEdit.Name_2 = DataStru_Name[jj].ToString();
+                if (DataStru_DS[jj] == "string")
+                {
+                    nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                }
+                else if (DataStru_DS[jj] == "double")
+                    nameFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                nameFieldEdit.Length_2 = 200;
+                fieldsEdit.AddField(nameField);
+            }
+            IFieldChecker fieldChecker = new FieldCheckerClass();
+            IEnumFieldError enumFieldError = null;
+            IFields validatedFields = null;
+            fieldChecker.ValidateWorkspace = (IWorkspace)pFWS;
+            fieldChecker.Validate(fields, out enumFieldError, out validatedFields);
+            //在工作空间中生成FeatureClass;
+            IFeatureClass pNewFeaCls = pFWS.CreateFeatureClass(shpName, validatedFields, null, null, esriFeatureType.esriFTSimple, "Shape", "");
+
+            System.IO.FileStream FS_Routescsv = new System.IO.FileStream(InputFilePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            System.IO.StreamReader SR_Routescsv = new System.IO.StreamReader(FS_Routescsv, utf8WithoutBom);
+
+            string Routes_Line = "";
+            IFeatureBuffer pFeatureBuffer = null;
+            IFeatureCursor pFeatureCursor = null;
+
+            while ((Routes_Line = SR_Routescsv.ReadLine()) != null)
+            {
+                NumOfRecord++;
+            }
+            SR_Routescsv.BaseStream.Seek(0, SeekOrigin.Begin);
+            num = 0;
+            while ((Routes_Line = SR_Routescsv.ReadLine()) != null)
+            {
+                pFeatureBuffer = pNewFeaCls.CreateFeatureBuffer();
+                pFeatureCursor = pNewFeaCls.Insert(true);
+
+                int index = Routes_Line.IndexOf('"');//第一个双引号在字符串中的位置
+                string aryLineFirst = Routes_Line.Substring(0, index - 1);
+                string aryLineLast = Routes_Line.Substring(index + 1, Routes_Line.Length - index - 2);
+
+                string[] aryLineFirstArray = aryLineFirst.Split(',');
+
+                for (int it = 0; it < DataStru_DS.Length; it++)
+                {
+                    if (DataStru_DS[it] == "string")
+                        pFeatureBuffer.set_Value(it + 2, aryLineFirstArray[it].ToString());
+                    else if (DataStru_DS[it] == "double")
+                        try
+                        {
+                            pFeatureBuffer.set_Value(it + 2, double.Parse(aryLineFirstArray[it].ToString()));
+                        }
+                        catch (System.Exception ex)
+                        {
+                            pFeatureBuffer.set_Value(it + 2, -1);
+                        }
+                }
+                string SumPath = aryLineLast;
+
+                string temp = SumPath;
+                int SumOfpoint = temp.Length - temp.Replace(";", "").Length;
+
+                if (SumOfpoint > 11000)
+                {
+                    int time = SumOfpoint / 11000 + 1;
+                    string[] subAryLine = new string[time];
+                    string tempStr = SumPath;
+                    int indexPre = 0;
+                    int indexSub = 0;
+                    int t = 0;
+                    while (tempStr.Length > 0)
+                    {
+                        int indexT = 0;
+                        for (int i = 0; i < 11000; i++)
+                        {
+                            if ((t + 1) == time)
+                            {
+                                indexSub = tempStr.Length;
+                                subAryLine[t] = tempStr.Substring(indexPre, indexSub - 1);
+                                t++;
+                                tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
+                                break;
+                            }
+                            indexT = tempStr.IndexOf(';', indexT + 1);
+                            if (indexT == -1)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                indexSub = indexT;
+                            }
+                        }
+                        if (t == time)
+                            continue;
+                        indexSub++;
+                        subAryLine[t] = tempStr.Substring(indexPre, indexSub - 1);
+                        t++;
+                        tempStr = tempStr.Substring(indexSub, tempStr.Length - indexSub);
+                    }
+                    Make_Polygon_Feature(pNewFeaCls, subAryLine);
+                }
+                else
+                {
+                    string[] strArray = new string[1];
+                    strArray[0] = SumPath;
+                    Make_Polygon_Feature(pNewFeaCls, strArray);
+                }
+                ProgressFm.setPos((int)((++num) / (double)(NumOfRecord) * 100));//设置进度条位置
+            }
+            SR_Routescsv.Close();
+            FS_Routescsv.Close();
+        }
         private void PublicTrans_Polyline_Routes(IFeatureWorkspace pFWS, string shpName, string InputFilePath, string DataStructureFile)
         {
             //开始添加属性字段；
@@ -1804,6 +1967,59 @@ namespace MakeShpFile
             featureBuffer.Shape = pt;
             pFeatureCursor.InsertFeature(featureBuffer);
         }
+        IPolygon ConstructPolygonFromPolyline(IPolyline pPolyline)
+        {
+            IGeometryCollection pPolygonGeoCol = new PolygonClass();
+
+            if ((pPolyline != null) && (!pPolyline.IsEmpty))
+            {
+                IGeometryCollection pPolylineGeoCol = pPolyline as IGeometryCollection;
+                ISegmentCollection pSegCol = new RingClass();
+                ISegment pSegment = null;
+                object missing = Type.Missing;
+
+                for (int i = 0; i < pPolylineGeoCol.GeometryCount; i++)
+                {
+                    ISegmentCollection pPolylineSegCol = pPolylineGeoCol.get_Geometry(i) as ISegmentCollection;
+                    for (int j = 0; j < pPolylineSegCol.SegmentCount; j++)
+                    {
+                        pSegment = pPolylineSegCol.get_Segment(j);
+                        pSegCol.AddSegment(pSegment, ref missing, ref missing);
+                    }
+                    pPolygonGeoCol.AddGeometry(pSegCol as IGeometry, ref missing, ref missing);
+                }
+            }
+            return pPolygonGeoCol as IPolygon;
+        }
+        public void Make_Polygon_Feature(IFeatureClass pNewFeaCls, string[] strArray)
+        {
+            IFeatureClass pFeatureClass = pNewFeaCls;
+            Ring ring1 = new RingClass();
+            object missing = Type.Missing;
+            ESRI.ArcGIS.Geometry.IPoint pPoint = new PointClass();
+            for (int j = 0; j < strArray.Length; j++)
+            {
+                string str = strArray[j];
+                string[] pointCpArray = str.Split(';');
+                for (int i = 0; i < pointCpArray.Length; i++)
+                {
+                    string[] pos = pointCpArray[i].Split(',');
+                    string xPosOri = pos[0];
+                    string yPosOri = pos[1];
+                    pPoint.X = double.Parse(xPosOri);
+                    pPoint.Y = double.Parse(yPosOri);
+                    ring1.AddPoint(pPoint, missing, missing);
+                }
+            }
+            IGeometryCollection pointPolygon = new PolygonClass();
+            pointPolygon.AddGeometry(ring1 as IGeometry, ref missing, ref missing);
+            IPolygon polyGonGeo = pointPolygon as IPolygon;
+            polyGonGeo.SpatialReference = spatialReference;
+            polyGonGeo.Project(spatialReference2);
+            IFeature pFeature = pFeatureClass.CreateFeature();
+            pFeature.Shape = polyGonGeo;
+            pFeature.Store();
+        }
         public void Make_Polyline_Feature2(IFeatureBuffer featureBuffer,IFeatureCursor pFeatureCursor, string[] strArray)
         {   
             IPolyline py = new PolylineClass();
@@ -2325,6 +2541,65 @@ namespace MakeShpFile
                         Default_Polyline_Routes(pFWS, shpName, InputFilePath, DataStructureFile);
                     }
                 }
+                else if(DataMode == 3)
+                {
+                    if(VehicleMode == 5)
+                    {
+                        string DataStructureFile;
+                        OpenFileDialog ofd = new OpenFileDialog();
+                        var utf8WithoutBom = new System.Text.UTF8Encoding(false);
+                        ofd.Filter = "csv文件(*.csv;*.csv)|*.csv;*.csv|所有文件|*.*";
+                        ofd.ValidateNames = true;
+                        ofd.CheckPathExists = true;
+                        ofd.CheckFileExists = true;
+                        if (ofd.ShowDialog() != DialogResult.OK)
+                        {
+                            return;
+                        }
+                        string path = ofd.FileName;
+
+                        string InputFilePath = ofd.FileName;
+                        string shpDirectoryPath = System.IO.Path.GetDirectoryName(InputFilePath);
+                        string shpName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
+                        string shpFullName = shpName + ".shp";
+                        string prjName = shpName + ".prj";
+                        string dbfName = shpName + ".dbf";
+                        string shxName = shpName + ".shx";
+                        string sbnName = shpName + ".sbn";
+                        string xmlName = shpName + ".shp.xml";
+                        string sbxName = shpName + ".sbx";
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + shpFullName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + shpFullName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + prjName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + prjName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + dbfName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + dbfName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + shxName))
+                            System.IO.File.Delete(shpDirectoryPath + shxName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbnName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + sbnName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + xmlName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + xmlName);
+                        if (System.IO.File.Exists(shpDirectoryPath + "\\" + sbxName))
+                            System.IO.File.Delete(shpDirectoryPath + "\\" + sbxName);
+                        //生成shp
+                        string shpFileName = System.IO.Path.GetFileNameWithoutExtension(InputFilePath);
+                        //打开生成shapefile的工作空间；
+                        IFeatureWorkspace pFWS = null;
+                        IWorkspaceFactory pWSF = new ShapefileWorkspaceFactoryClass();
+                        try
+                        {
+                            IWorkspace pWs = pWSF.OpenFromFile(shpDirectoryPath + "\\", 0);
+                            pFWS = pWs as IFeatureWorkspace;
+                        }
+                        catch (System.Exception ex)
+                        {
+                            MessageBox.Show(ex.ToString());
+                        }
+                        DataStructureFile = shpDirectoryPath + "\\Path_DS.txt";
+                        Default_Polygon_curves(pFWS, shpName, InputFilePath, DataStructureFile);
+                    }
+            }
                 sw.Stop();
                 TimeSpan ts2 = sw.Elapsed;
                 ProgressFm.Close();
